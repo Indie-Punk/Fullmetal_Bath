@@ -10,8 +10,9 @@ namespace _CODE
 {
     public class DrillController : MonoBehaviour
     {
-        [SerializeField] private GameObject smallDrill;
+        [SerializeField] private DrillSimulator drillSimulator;
         [SerializeField] private ShakePreset shakePreset;
+        
 
         [SerializeField] private AudioSource drillSource;
         [SerializeField] private List<ShakeInstance> shakeInstances;
@@ -26,6 +27,7 @@ namespace _CODE
                 
                 DOTween.To(() => drillSource.volume, x => drillSource.volume = x, .5f, 2f);
                 active = true;
+                drillSimulator.SetCurrentSpeed(1);
             }
             else
             {
@@ -34,6 +36,7 @@ namespace _CODE
                     
                     shakeInstance.Stop(shakePreset.FadeOut, true);
                 }
+                drillSimulator.SetCurrentSpeed(0);
                 active = false;
                 DOTween.To(() => drillSource.volume, x => drillSource.volume = x, 0, 2f);
             }

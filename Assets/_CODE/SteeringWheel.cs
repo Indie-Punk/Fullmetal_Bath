@@ -5,6 +5,7 @@ namespace _CODE
 {
     public class SteeringWheel : MonoBehaviour
     {
+        [SerializeField] private DrillSimulator drillSimulator;
         // [SerializeField] private force;
         private Vector2 rotForce;
         private void Update()
@@ -25,6 +26,7 @@ namespace _CODE
             rotForce.Normalize();
 
             transform.localEulerAngles = new Vector3(0, rotForce.x * 20, rotForce.y * 20);
+            drillSimulator.AddTurnForce(rotForce);
             Debug.Log(rotForce.normalized);
         }
     }
