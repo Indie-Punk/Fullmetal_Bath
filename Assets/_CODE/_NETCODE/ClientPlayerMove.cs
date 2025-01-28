@@ -10,29 +10,25 @@ namespace _CODE._NETCODE
         [SerializeField] private List<GameObject> cameraStaff;
         [SerializeField] private ThirdPersonController personController;
         [SerializeField] private AnimationController animController;
+
         private void Awake()
         {
             animController.enabled = false;
             personController.enabled = false;
             foreach (var staff in cameraStaff)
-            {
                 staff.SetActive(false);
-            }
         }
 
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
 
-            if (IsOwner)
-            {
-                animController.enabled = true;
-                personController.enabled = true;
-                foreach (var staff in cameraStaff)
-                {
-                    staff.SetActive(true);
-                }
-            }
+            if (!IsOwner)
+                return;
+            animController.enabled = true;
+            personController.enabled = true;
+            foreach (var staff in cameraStaff)
+                staff.SetActive(true);
         }
     }
 }
