@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ECM2.Examples.FirstPerson;
 using ECM2.Walkthrough.Ex92;
 using Unity.Netcode;
 using UnityEngine;
@@ -7,16 +8,18 @@ namespace _CODE._NETCODE
 {
     public class ClientPlayerMove : NetworkBehaviour
     {
-        [SerializeField] private List<GameObject> cameraStaff;
-        [SerializeField] private ThirdPersonController personController;
+        [SerializeField] private List<Renderer> playerMesh;
+        [SerializeField] private GameObject cameraStaff;
+        [SerializeField] private FirstPersonCharacterInput personController;
         [SerializeField] private AnimationController animController;
 
         private void Awake()
         {
             animController.enabled = false;
             personController.enabled = false;
-            foreach (var staff in cameraStaff)
-                staff.SetActive(false);
+            cameraStaff.SetActive(false);
+            foreach (var mesh in playerMesh)
+                mesh.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
         }
 
         public override void OnNetworkSpawn()
@@ -25,10 +28,11 @@ namespace _CODE._NETCODE
 
             if (!IsOwner)
                 return;
+            foreach (var mesh in playerMesh)
+                mesh.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
             animController.enabled = true;
             personController.enabled = true;
-            foreach (var staff in cameraStaff)
-                staff.SetActive(true);
+            cameraStaff.SetActive(true);
         }
     }
 }
