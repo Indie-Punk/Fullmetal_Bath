@@ -30,23 +30,24 @@ namespace _CODE
 
             Animator animator = _character.GetAnimator();
 
-            if (Input.GetKeyDown(KeyCode.Keypad1))
+            if (Input.GetKeyDown(KeyCode.Alpha1))
                 animator.SetTrigger("Greetings");
             // Compute input move vector in local space
             animator.SetFloat("Speed", _character.GetSpeed());
             animator.SetBool(Crouch, _character.IsCrouched());
             animator.SetBool(Crouch, _character.IsCrouched());
-            Debug.Log(_character.GetSpeed());
+            // Debug.Log(_character.GetSpeed());
 
             // Vector3 move = _character.GetMovementDirection();
+            
             Vector3 move = transform.InverseTransformDirection(_character.GetMovementDirection());
 
             // Update the animator parameters
 
             float forwardAmount = move.z;
 
-            animator.SetFloat(Forward, forwardAmount, 0.1f, deltaTime);
-            animator.SetFloat(Turn, move.x, 0.1f, deltaTime);
+            animator.SetFloat(Forward, forwardAmount, 0.02f, deltaTime);
+            animator.SetFloat(Turn, move.x, 0.02f, deltaTime);
             animator.SetBool(Ground, _character.IsGrounded());
             // Vector3 move = transform.InverseTransformDirection(_character.GetMovementDirection());
             //

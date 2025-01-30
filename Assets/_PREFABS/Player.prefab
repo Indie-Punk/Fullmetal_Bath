@@ -488,7 +488,7 @@ Transform:
   m_GameObject: {fileID: 4483907686874501748}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -1.45, z: -5}
+  m_LocalPosition: {x: 0, y: 0, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -712,7 +712,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  TransitionStateInfoList: []
+  TransitionStateInfoList:
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 765711723
+    DestinationState: -658647956
+    TransitionDuration: 0
+    TriggerNameHash: -658647956
+    TransitionIndex: 2
   m_Animator: {fileID: 2724498394027327722}
 --- !u!114 &4783168383449101777
 MonoBehaviour:

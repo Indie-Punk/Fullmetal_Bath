@@ -8,6 +8,8 @@ namespace ECM2.Examples.FirstPerson
     
     public class FirstPersonCharacterInput : MonoBehaviour
     {
+        [SerializeField] float maxWalkSpeed = 2;
+        [SerializeField] float maxRunSpeed = 3;
         private Character _character;
 
         private void Awake()
@@ -32,8 +34,18 @@ namespace ECM2.Examples.FirstPerson
 
             _character.SetMovementDirection(movementDirection);
             
-            // Crouch input
+            // Run input
+            if (Input.GetKey(KeyCode.LeftShift) && inputMove.y >= 0)
+            {
+                _character.maxWalkSpeed = maxRunSpeed;
+            }
+            else
+            {
+                _character.maxWalkSpeed = maxWalkSpeed;
+            }
             
+            // Crouch input
+
             if (Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.C))
                 _character.Crouch();
             else if (Input.GetKeyUp(KeyCode.LeftControl) || Input.GetKeyUp(KeyCode.C))
