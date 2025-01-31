@@ -472,6 +472,7 @@ GameObject:
   - component: {fileID: 4416980852006067623}
   - component: {fileID: 4783168383449101777}
   - component: {fileID: 2961224824421869902}
+  - component: {fileID: 7933789966773018573}
   m_Layer: 0
   m_Name: Muzik
   m_TagString: Player
@@ -689,7 +690,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 4291786166
+  GlobalObjectIdHash: 675137601
   InScenePlacedSourceGlobalObjectIdHash: 994601983
   DeferredDespawnTick: 0
   Ownership: 1
@@ -778,6 +779,28 @@ MonoBehaviour:
   cameraStaff: {fileID: 5376665189878796339}
   personController: {fileID: 4256130669384961345}
   animController: {fileID: 5404993219280791633}
+--- !u!114 &7933789966773018573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4483907686874501748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3196347b302454992f046b15d43f369, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  raycastPos: {fileID: 8322464771479601814}
+  burpController: {fileID: 1871410585490032407}
+  interactionLayerMask:
+    serializedVersion: 2
+    m_Bits: 8
+  takePos: {fileID: 2819538384323292230}
+  interactItem: {fileID: 0}
+  pushForce: 10
+  torqueForce: 10
 --- !u!1 &5248414767274188344
 GameObject:
   m_ObjectHideFlags: 0
@@ -1285,7 +1308,6 @@ GameObject:
   - component: {fileID: 6602175139557218209}
   - component: {fileID: 110451573669624194}
   - component: {fileID: 1871410585490032407}
-  - component: {fileID: 1854301370352391857}
   m_Layer: 0
   m_Name: Camera
   m_TagString: MainCamera
@@ -1557,27 +1579,6 @@ MonoBehaviour:
   burpPrefab: {fileID: 1071667757758507394, guid: c48ca2f53b5e9fc4bb1c72c7144ef755, type: 3}
   audioSource: {fileID: 3685743940696009120}
   burpSfx: {fileID: 8300000, guid: 902a2290caf5ce744bd55393759c9f2d, type: 3}
---- !u!114 &1854301370352391857
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6768060192814012388}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f3196347b302454992f046b15d43f369, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _networkBehaviour: {fileID: 4416980852006067623}
-  burpController: {fileID: 1871410585490032407}
-  interactionLayerMask:
-    serializedVersion: 2
-    m_Bits: 8
-  takePos: {fileID: 2819538384323292230}
-  interactItem: {fileID: 0}
-  pushForce: 10
-  torqueForce: 10
 --- !u!1 &7177137873480385559
 GameObject:
   m_ObjectHideFlags: 0

@@ -8,7 +8,7 @@ namespace _CODE
 {
     public class InteractionController : NetworkBehaviour
     {
-        [SerializeField] NetworkBehaviour _networkBehaviour;
+        [SerializeField] private Transform raycastPos;
         [SerializeField] public BurpController burpController;
         [SerializeField] private LayerMask interactionLayerMask;
         [SerializeField] private Transform takePos;
@@ -17,15 +17,15 @@ namespace _CODE
         [SerializeField] private float pushForce;
         [SerializeField] private float torqueForce;
 
-        [Rpc(SendTo.Server)]
-        private void MoveToRpc()
+        [ClientRpc]
+        private void MoveToClientRpc()
         {
             interactItem.transform.position = takePos.position;
             interactItem.transform.rotation = takePos.rotation;
         }
         private void Update()
         {
-            if (!_networkBehaviour.IsOwner)
+            if (!IsOwner)
                 return;
             // Debug.Log("is owner " +IsOwner);
             // if (!IsOwner)
@@ -33,7 +33,7 @@ namespace _CODE
             Interaction();
             if (interactItem != null)
             {
-                MoveToRpc();
+                MoveToClientRpc();
             }
             else
             {
@@ -69,7 +69,7 @@ namespace _CODE
         {
             RaycastHit hit;
             // Does the ray intersect any objects excluding the player layer
-            if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, 10, interactionLayerMask))
+            if (Physics.Raycast(raycastPos.position, raycastPos.forward, out hit, 10, interactionLayerMask))
             {
                 
                 if (hit.transform.gameObject.TryGetComponent<InteractionBtn>(out var btn))
