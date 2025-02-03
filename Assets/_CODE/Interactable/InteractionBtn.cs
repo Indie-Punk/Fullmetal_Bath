@@ -1,21 +1,36 @@
 using System;
 using DG.Tweening;
 using NUnit.Framework.Constraints;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class InteractionBtn : MonoBehaviour
+public class InteractionBtn : NetworkBehaviour
 {
     public UnityEvent OnActivate;
     public UnityEvent OnDeactivate;
 
     [SerializeField] private BtnType btnType;
-    [SerializeField] private Vector3 distance;
+    [SerializeField] private float distance;
     [SerializeField] private float time;
-
-    private bool pushed;
+    
+    private NetworkVariable<bool> pushed = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Owner);
     private Sequence seq;
-    private Vector3 defaultPos;
+    private NetworkVariable<float> defaultPosY = new NetworkVariable<float>(0, NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Owner);
+
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+        if (pushed.Value && btnType == BtnType.Touch)
+            OnActivate?.Invoke();
+    }
+
+    private void Start()
+    {
+        defaultPosY.Value = transform.localPosition.x;
+    }
 
     enum BtnType
     {
@@ -23,8 +38,9 @@ public class InteractionBtn : MonoBehaviour
         Touch
     };
 
-    public void Touch()
-    {
+    [Rpc(SendTo.Everyone, RequireOwnership = false)]
+    public void TouchRpc()
+    { 
         if (seq != null)
             return;
         switch (btnType)
@@ -33,7 +49,7 @@ public class InteractionBtn : MonoBehaviour
                 Click();
                 break;
             case BtnType.Touch:
-                if (!pushed)
+                if (!pushed.Value)
                     PushOn();
                 else
                     PushOff();
@@ -43,25 +59,23 @@ public class InteractionBtn : MonoBehaviour
 
     void Click()
     {
-        defaultPos = transform.localPosition;
         seq = DOTween.Sequence();
-        seq.Append(transform.DOLocalMove(defaultPos + distance, time));
-        seq.Append(transform.DOLocalMove(defaultPos, time));
+        seq.Append(transform.DOLocalMove(new Vector3(defaultPosY.Value + distance,0,0), time));
+        seq.Append(transform.DOLocalMove(new Vector3(defaultPosY.Value,0,0), time));
         seq.OnComplete(() =>
         {
             seq = null;
             OnActivate?.Invoke();
         });
     }
-
+    
     public void PushOn()
     {
-        defaultPos = transform.localPosition;
         seq = DOTween.Sequence();
-        seq.Append(transform.DOLocalMove(defaultPos + distance, time));
+        seq.Append(transform.DOLocalMove(new Vector3(defaultPosY.Value + distance,0,0), time));
         seq.OnComplete(() =>
         {
-            pushed = true;
+            pushed.Value = true;
             seq = null;
             OnActivate?.Invoke();
         });
@@ -70,10 +84,10 @@ public class InteractionBtn : MonoBehaviour
     public void PushOff()
     {
         seq = DOTween.Sequence();
-        seq.Append(transform.DOLocalMove(defaultPos, time));
+        seq.Append(transform.DOLocalMove(new Vector3(defaultPosY.Value,0,0), time));
         seq.OnComplete(() =>
         {
-            pushed = false;
+            pushed.Value = false;
             seq = null;
             OnDeactivate?.Invoke();
         });

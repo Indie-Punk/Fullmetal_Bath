@@ -1,4 +1,5 @@
 ﻿using System;
+using _CODE._NETCODE;
 using _CODE.Interactable;
 using Unity.Netcode;
 using UnityEditor;
@@ -11,36 +12,72 @@ namespace _CODE
         [SerializeField] private Transform raycastPos;
         [SerializeField] public BurpController burpController;
         [SerializeField] private LayerMask interactionLayerMask;
-        [SerializeField] private Transform takePos;
+        [SerializeField] public Transform takePos;
         // [SerializeField] private Beer beer;
         [SerializeField] private InteractableItem interactItem;
         [SerializeField] private float pushForce;
         [SerializeField] private float torqueForce;
-
-        [ClientRpc]
-        private void MoveToClientRpc()
-        {
-            interactItem.transform.position = takePos.position;
-            interactItem.transform.rotation = takePos.rotation;
-        }
+        
+        [Header("Take and Drop logic")]
+        [SerializeField] GameObject meatPrefab;
+        
         private void Update()
         {
-            if (!IsOwner)
-                return;
-            // Debug.Log("is owner " +IsOwner);
-            // if (!IsOwner)
-            //     return;
-            Interaction();
             if (interactItem != null)
             {
-                MoveToClientRpc();
+                interactItem.transform.position = takePos.position;
+                interactItem.transform.rotation = takePos.rotation;
             }
-            else
+            if (!IsOwner)
+                return;
+            if (Input.GetKeyDown(KeyCode.M))
+                SpawnMeatRpc();
+            Interaction();
+            if (interactItem == null)
             {
                 Searching();
             }
         }
 
+        [Rpc(SendTo.Server)]
+        void SpawnMeatRpc()
+        {
+            var meat = Instantiate(meatPrefab, takePos.position, Quaternion.identity);
+            meat.GetComponent<NetworkObject>().Spawn(true);
+
+        }
+
+        [Rpc(SendTo.Everyone)]
+        private void TakeRpc(NetworkBehaviourReference nb)
+        {
+            if (nb.TryGet<InteractableItem>(out var item))
+            {
+                
+                interactItem = item;
+                interactItem.Take();
+                // TakeRpc(item);
+                interactItem.GetComponent<ClientNetworkTransform>().enabled = false;
+                interactItem.GetComponent<Collider>().enabled = false;
+                interactItem.GetComponent<Rigidbody>().isKinematic = true;
+                interactItem.transform.localPosition = Vector3.zero;
+                interactItem.OnDestroy += () => { interactItem = null; };
+            }
+        }
+        
+        [Rpc(SendTo.Everyone)]
+        private void DropRpc()
+        {
+            interactItem.transform.position = takePos.position;
+            interactItem.transform.rotation = takePos.rotation;
+            interactItem.GetComponent<Collider>().enabled = true;
+            interactItem.GetComponent<ClientNetworkTransform>().enabled = true;
+            var rbItem = interactItem.GetComponent<Rigidbody>();
+            rbItem.isKinematic = false;
+            rbItem.AddForce(takePos.forward * pushForce, ForceMode.Impulse);
+            rbItem.AddTorque(takePos.up * torqueForce, ForceMode.Impulse);
+            interactItem = null;
+        }
+        
         private void Interaction()
         {
             if (interactItem != null)
@@ -53,18 +90,13 @@ namespace _CODE
                 }
                 else if (Input.GetKeyDown(KeyCode.G))
                 {
-                    Debug.Log("Drop");
-                    interactItem.GetComponent<Collider>().enabled = true;
-                    var rbItem = interactItem.GetComponent<Rigidbody>();
-                    rbItem.isKinematic = false;
-                    rbItem.AddForce(transform.forward * pushForce, ForceMode.Impulse);
-                    rbItem.AddTorque(transform.up * torqueForce, ForceMode.Impulse);
-                    interactItem = null;
+                    DropRpc();
+                    // DropRpc();
                 }
             }
 
         }
-
+        
         private void Searching()
         {
             RaycastHit hit;
@@ -72,22 +104,18 @@ namespace _CODE
             if (Physics.Raycast(raycastPos.position, raycastPos.forward, out hit, 10, interactionLayerMask))
             {
                 
-                if (hit.transform.gameObject.TryGetComponent<InteractionBtn>(out var btn))
+                if (hit.transform.gameObject.TryGetComponent<PushBtn>(out var btn))
                 {
                     if (Input.GetKeyDown(KeyCode.E))
-                        btn.Touch();
+                        btn.TouchServerRpc();
                 }
                 else if (hit.transform.gameObject.TryGetComponent<InteractableItem>(out var item))
                 {
                     if (Input.GetKeyDown(KeyCode.E))
                     {
                         Debug.Log("Take");
-                        item.Take();
-                        interactItem = item;
-                        interactItem.GetComponent<Collider>().enabled = false;
-                        interactItem.GetComponent<Rigidbody>().isKinematic = true;
-                        interactItem.transform.localPosition = Vector3.zero;
-                        interactItem.OnDestroy += () => { interactItem = null; };
+                        
+                        TakeRpc(item);
                     }
                 }
 

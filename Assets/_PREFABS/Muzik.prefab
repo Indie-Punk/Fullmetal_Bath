@@ -465,15 +465,15 @@ GameObject:
   - component: {fileID: 8287896631520015861}
   - component: {fileID: 7225158495143978968}
   - component: {fileID: 4256130669384961345}
+  - component: {fileID: 6433958556743507821}
   - component: {fileID: 8758110730352720512}
   - component: {fileID: 3970751028439862946}
   - component: {fileID: 2088640148873433027}
-  - component: {fileID: 6433958556743507821}
   - component: {fileID: 4416980852006067623}
   - component: {fileID: 4783168383449101777}
   - component: {fileID: 2961224824421869902}
   - component: {fileID: 7933789966773018573}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Muzik
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -607,6 +607,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxWalkSpeed: 2
   maxRunSpeed: 4
+--- !u!114 &6433958556743507821
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4483907686874501748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 4291786166
+  InScenePlacedSourceGlobalObjectIdHash: 994601983
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!114 &8758110730352720512
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -619,6 +644,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac2558eac22746b28343f8714cde3851, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   invertLook: 1
   mouseSensitivity: {x: 1, y: 1}
   minPitch: -80
@@ -678,31 +704,6 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &6433958556743507821
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4483907686874501748}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 675137601
-  InScenePlacedSourceGlobalObjectIdHash: 994601983
-  DeferredDespawnTick: 0
-  Ownership: 1
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
-  SyncOwnerTransformWhenParented: 1
-  AllowOwnerToParent: 0
 --- !u!114 &4416980852006067623
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -776,9 +777,14 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   playerMesh:
   - {fileID: 3864255426590123855}
-  cameraStaff: {fileID: 5376665189878796339}
+  camera: {fileID: 4449349076844017677}
+  brain: {fileID: 110451573669624194}
+  cinemachineStaff:
+  - {fileID: 3403635242391040635}
+  - {fileID: 5491587400649191464}
   personController: {fileID: 4256130669384961345}
   animController: {fileID: 5404993219280791633}
+  audioListener: {fileID: 8045006676165402530}
 --- !u!114 &7933789966773018573
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -801,6 +807,7 @@ MonoBehaviour:
   interactItem: {fileID: 0}
   pushForce: 10
   torqueForce: 10
+  meatPrefab: {fileID: 794741491956747158, guid: 2ee48b7be7e7f2d4a825f3832803c427, type: 3}
 --- !u!1 &5248414767274188344
 GameObject:
   m_ObjectHideFlags: 0
@@ -954,12 +961,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5943139315569771103}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.436}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.43599987}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 8322464771479601814}
+  m_Father: {fileID: 8739239893612979103}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6264445474441058127
 GameObject:
@@ -1327,8 +1334,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 1.65, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 2819538384323292230}
+  m_Children: []
   m_Father: {fileID: 3487781259073137800}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &4449349076844017677
@@ -2111,7 +2117,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 1.65, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 2819538384323292230}
   m_Father: {fileID: 8717735673714616225}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!82 &3685743940696009120

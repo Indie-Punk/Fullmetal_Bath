@@ -1,12 +1,14 @@
 ﻿using System;
 using Cinemachine;
 using ECM2.Examples.FirstPerson;
+using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace _CODE
 {
-    public class FirstPersonLook : MonoBehaviour
+    public class FirstPersonLook : NetworkBehaviour
     {
         
         [Space(15.0f)]
@@ -88,6 +90,8 @@ namespace _CODE
 
         private void Update()
         {
+            if (!IsOwner)
+                return;
             Vector2 lookInput = new Vector2
             {
                 x = Input.GetAxisRaw("Mouse X"),
@@ -97,9 +101,23 @@ namespace _CODE
             lookInput *= mouseSensitivity;
 
             _character.AddControlYawInput(lookInput.x);
-            _character.AddControlPitchInput(invertLook ? -lookInput.y : lookInput.y, minPitch, maxPitch);
-            
+            // _character.AddControlPitchInput(invertLook ? -lookInput.y : lookInput.y, minPitch, maxPitch);
+            AddControlPitchInputRpc(lookInput.y);
+
         }
+
+        [Rpc(SendTo.Everyone)]
+        void AddControlPitchInputRpc(float lookInputY)
+        {
+            // if (OwnerClientId == 1)
+            // {
+            //     Debug.Log("client " + OwnerClientId + ": " + lookInputY);
+            //     Debug.Log("client " + OwnerClientId + " minPitch: " + minPitch);
+            //     Debug.Log("client " + OwnerClientId + " maxPitch: " + maxPitch);
+            // }
+            _character.AddControlPitchInput(invertLook ? -lookInputY : lookInputY, minPitch, maxPitch);
+        }
+        
 
         private void LateUpdate()
         {
