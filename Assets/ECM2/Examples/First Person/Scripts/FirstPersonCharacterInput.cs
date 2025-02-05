@@ -52,11 +52,17 @@ namespace ECM2.Examples.FirstPerson
                 _character.UnCrouch();
             
             // Jump input
+            Jump();
+        }
+
+        void Jump()
+        {
             
             if (Input.GetButtonDown("Jump"))
                 _character.Jump();
             else if (Input.GetButtonUp("Jump"))
                 _character.StopJumping();
         }
+
     }
 }

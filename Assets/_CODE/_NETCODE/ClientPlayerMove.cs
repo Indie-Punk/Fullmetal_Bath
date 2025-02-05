@@ -10,11 +10,14 @@ namespace _CODE._NETCODE
     public class ClientPlayerMove : NetworkBehaviour
     {
         [SerializeField] private List<Renderer> playerMesh;
+        [SerializeField] private List<Renderer> firstPersonMeshes;
         [SerializeField] private Camera camera;
         [SerializeField] private CinemachineBrain brain;
         [SerializeField] private List<CinemachineVirtualCamera> cinemachineStaff;
         [SerializeField] private FirstPersonCharacterInput personController;
         [SerializeField] private AnimationController animController;
+        [SerializeField] private GameObject uiStats;
+        [SerializeField] private GameObject debugStats;
         [SerializeField] AudioListener audioListener;
         private void Awake()
         {
@@ -29,6 +32,8 @@ namespace _CODE._NETCODE
             }
             foreach (var mesh in playerMesh)
                 mesh.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+            foreach (var mesh in firstPersonMeshes)
+                mesh.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
         }
 
         public override void OnNetworkSpawn()
@@ -37,9 +42,13 @@ namespace _CODE._NETCODE
 
             if (!IsOwner)
                 return;
+            uiStats.SetActive(true);
+            debugStats.SetActive(false);
             brain.enabled = true;
             foreach (var mesh in playerMesh)
                 mesh.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
+            foreach (var mesh in firstPersonMeshes)
+                mesh.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
             foreach (var c in cinemachineStaff)
             {
                 c.enabled = true;

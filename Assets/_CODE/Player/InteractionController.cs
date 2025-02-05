@@ -9,6 +9,7 @@ namespace _CODE
 {
     public class InteractionController : NetworkBehaviour
     {
+        [SerializeField] private KickController kickController;
         [SerializeField] private Transform raycastPos;
         [SerializeField] public BurpController burpController;
         [SerializeField] private LayerMask interactionLayerMask;
@@ -23,13 +24,14 @@ namespace _CODE
         
         private void Update()
         {
+            if (!IsOwner)
+                return;
+            Kick();
             if (interactItem != null)
             {
                 interactItem.transform.position = takePos.position;
                 interactItem.transform.rotation = takePos.rotation;
             }
-            if (!IsOwner)
-                return;
             if (Input.GetKeyDown(KeyCode.M))
                 SpawnMeatRpc();
             Interaction();
@@ -39,6 +41,16 @@ namespace _CODE
             }
         }
 
+        void Kick()
+        {
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                PushableObject pushableObject = null;
+                if (hit.collider !=null)
+                    pushableObject = hit.collider.GetComponent<PushableObject>();
+                kickController.Kick(pushableObject);
+            }
+        }
         [Rpc(SendTo.Server)]
         void SpawnMeatRpc()
         {
@@ -91,19 +103,17 @@ namespace _CODE
                 else if (Input.GetKeyDown(KeyCode.G))
                 {
                     DropRpc();
-                    // DropRpc();
                 }
             }
 
         }
         
+        RaycastHit hit;
         private void Searching()
         {
-            RaycastHit hit;
             // Does the ray intersect any objects excluding the player layer
             if (Physics.Raycast(raycastPos.position, raycastPos.forward, out hit, 10, interactionLayerMask))
             {
-                
                 if (hit.transform.gameObject.TryGetComponent<PushBtn>(out var btn))
                 {
                     if (Input.GetKeyDown(KeyCode.E))

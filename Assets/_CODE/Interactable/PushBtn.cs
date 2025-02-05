@@ -14,7 +14,7 @@ namespace _CODE.Interactable
         [SerializeField] private float time;
 
         private NetworkVariable<bool> pushed = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone,
-            NetworkVariableWritePermission.Owner);
+            NetworkVariableWritePermission.Server);
 
         private Sequence seq;
 
