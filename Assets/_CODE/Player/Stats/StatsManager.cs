@@ -88,13 +88,13 @@ namespace _CODE.Stats
                 return;
             hpRate = 0;
             hp.Value = Random.Range(60, 100);
-            staminaRate = 0;
-            stamina.Value = Random.Range(0, 100);
+            staminaRate = 15;
+            stamina.Value = 100;
             hungerRate = 1f;
             hunger.Value = Random.Range(60, 100);
-            temperatureRate = .2f;
-            temperature.Value = Random.Range(60, 100);
-            shitRate = .2f;
+            temperatureRate = 5f;
+            temperature.Value = 0;
+            shitRate = 1f;
             shit.Value = Random.Range(60, 100);
             drunkRate = -1;
             drunk.Value = Random.Range(60, 100);
@@ -111,18 +111,18 @@ namespace _CODE.Stats
         {
             
             Tick(hp, hpRate);
-            Tick(stamina, staminaRate);
+            Tick(stamina, staminaRate, 100 - Mathf.Clamp(temperature.Value - 50, 0, 150));
             Tick(hunger, hungerRate);
             Tick(temperature, temperatureRate);
             Tick(shit, shitRate);
             Tick(drunk, drunkRate);
         }
-        
-        void Tick(NetworkVariable<float> stat, float speedRate)
+
+        void Tick(NetworkVariable<float> stat, float speedRate, float max = 100)
         {
             if (!IsOwner)
                 return;
-            stat.Value = Mathf.Clamp(stat.Value + Time.deltaTime * speedRate, 0, 100);
+            stat.Value = Mathf.Clamp(stat.Value + Time.deltaTime * speedRate, 0, max);
         }
         
         void UseStamina()
