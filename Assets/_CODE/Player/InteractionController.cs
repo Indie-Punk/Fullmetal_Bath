@@ -1,6 +1,7 @@
 ﻿using System;
 using _CODE._NETCODE;
 using _CODE.Interactable;
+using ECM2;
 using Unity.Netcode;
 using UnityEditor;
 using UnityEngine;
@@ -18,12 +19,20 @@ namespace _CODE
         [SerializeField] private InteractableItem interactItem;
         [SerializeField] private float pushForce;
         [SerializeField] private float torqueForce;
-        
+        public bool isSit;
+        public bool IsSit => isSit;
         [Header("Take and Drop logic")]
         [SerializeField] GameObject meatPrefab;
+
+        public SittingPlace sitPlace;
         
         private void Update()
         {
+            if (IsSit)
+            {
+                GetComponent<CharacterMovement>().SetPosition(sitPlace.SitPos);
+            }
+
             if (!IsOwner)
                 return;
             Kick();
@@ -107,6 +116,28 @@ namespace _CODE
             }
 
         }
+
+        public void StandUp()
+        {
+            isSit = false;
+            sitPlace.SeatControlRpc(false);
+            GetComponent<CharacterMovement>().SetPosition(sitPlace.StandUpPos);
+            sitPlace = null;
+        }
+        
+        [Rpc(SendTo.Server)]
+        void SitDownRpc()
+        {
+            if (!IsOwner)
+                return;
+            if (sitPlace != null && !sitPlace.IsBusy)
+            {
+                isSit = true;
+                sitPlace.SeatControlRpc(true);
+                GetComponent<CharacterMovement>().SetPosition(sitPlace.SitPos);
+                // transform.position = sitPlace.SitPos;
+            }
+        }
         
         RaycastHit hit;
         private void Searching()
@@ -114,6 +145,16 @@ namespace _CODE
             // Does the ray intersect any objects excluding the player layer
             if (Physics.Raycast(raycastPos.position, raycastPos.forward, out hit, 10, interactionLayerMask))
             {
+                if (hit.transform.gameObject.TryGetComponent<SittingPlace>(out var sit))
+                {
+                    sitPlace = sit;
+                    if (Input.GetKeyDown(KeyCode.E))
+                    {
+                        SitDownRpc();
+                    }
+                }
+                else if (!isSit)
+                    sitPlace = null;
                 if (hit.transform.gameObject.TryGetComponent<PushBtn>(out var btn))
                 {
                     if (Input.GetKeyDown(KeyCode.E))

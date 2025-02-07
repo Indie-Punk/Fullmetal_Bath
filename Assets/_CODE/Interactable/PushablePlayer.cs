@@ -1,4 +1,5 @@
-﻿using Unity.Netcode;
+﻿using ECM2;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace _CODE.Interactable
@@ -16,7 +17,9 @@ namespace _CODE.Interactable
             // if (!IsOwner)
             //     return;
             Debug.Log("pushing player " + force);
-            transform.position += force;
+            // var rb = GetComponent<Rigidbody>();
+            // rb.AddForce(force, ForceMode.Impulse);
+            GetComponent<CharacterMovement>().velocity += force;
         }
     }
 }

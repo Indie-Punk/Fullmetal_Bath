@@ -15,7 +15,7 @@ namespace _CODE.Interactable
         [Rpc(SendTo.Server)]
         public virtual void PushRpc(Vector3 force)
         {
-            if (!IsOwner)
+            if (!IsServer)
                 return;
             rb.AddForce(force, ForceMode.Impulse);
         }

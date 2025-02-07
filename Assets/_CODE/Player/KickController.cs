@@ -12,26 +12,33 @@ namespace _CODE
         [SerializeField] private Animator thirdPerson;
         [SerializeField] private float kickForce = 20;
         [SerializeField] float kickCooldown = 1.25f;
+        [SerializeField] private Transform forcePoint;
         public bool kicked;
         float _kickTimer;
 
 
-
+        private PushableObject _pushableObject;
         public void Kick(PushableObject pushableObject)
         {
+            
             if (_kickTimer > 0)
                 return;
             _kickTimer = kickCooldown;
             kickAnim.SetTrigger("Kick");
             thirdPerson.SetTrigger("Kick");
-            StartCoroutine(KickCoroutine(pushableObject));
+            _pushableObject = pushableObject;
             
         }
 
-        IEnumerator KickCoroutine(PushableObject pushableObject)
+        public void KickImpact()
+        {
+            StartCoroutine(KickCoroutine());
+        }
+        
+        IEnumerator KickCoroutine()
         {
             yield return new WaitForSeconds(.45f);
-            pushableObject?.PushRpc(transform.forward * kickForce);
+            _pushableObject?.PushRpc(forcePoint.forward * kickForce);
 
         }
 

@@ -1,4 +1,5 @@
-﻿using ECM2;
+﻿using _CODE.Player;
+using ECM2;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -14,6 +15,7 @@ namespace _CODE
         private static readonly int Ground = Animator.StringToHash("OnGround");
         private static readonly int Jump = Animator.StringToHash("Jump");
         private Character _character;
+        [SerializeField] private InteractionController _interactionController;
 
         private void Awake()
         {
@@ -30,13 +32,14 @@ namespace _CODE
 
             Animator animator = _character.GetAnimator();
 
+            animator.SetBool("Sit", _interactionController.IsSit);
+            // if (playerInput.Is)
             if (Input.GetKeyDown(KeyCode.Alpha1))
                 animator.SetTrigger("Greetings");
             // Compute input move vector in local space
             animator.SetFloat("Speed", _character.GetSpeed());
             animator.SetBool(Crouch, _character.IsCrouched());
             animator.SetBool(Crouch, _character.IsCrouched());
-            // Debug.Log(_character.GetSpeed());
 
             // Vector3 move = _character.GetMovementDirection();
             
@@ -49,21 +52,6 @@ namespace _CODE
             animator.SetFloat(Forward, forwardAmount, 0.02f, deltaTime);
             animator.SetFloat(Turn, move.x, 0.02f, deltaTime);
             animator.SetBool(Ground, _character.IsGrounded());
-            // Vector3 move = transform.InverseTransformDirection(_character.GetMovementDirection());
-            //
-            // // Update the animator parameters
-            //
-            // float forwardAmount = _character.useRootMotion && _character.GetRootMotionController()
-            //     ? move.z
-            //     : Mathf.InverseLerp(0.0f, _character.GetMaxSpeed(), _character.GetSpeed());
-            //
-            //
-            // animator.SetBool(Ground, _character.IsGrounded());
-            // animator.SetBool(Crouch, _character.IsCrouched());
-            //
-            // if (_character.IsFalling())
-            //     animator.SetFloat(Jump, _character.GetVelocity().y, 0.1f, deltaTime);
-            //
         }
     }
 }

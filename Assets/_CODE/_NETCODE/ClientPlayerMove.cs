@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using _CODE.Player;
 using Cinemachine;
 using ECM2.Examples.FirstPerson;
 using ECM2.Walkthrough.Ex92;
@@ -14,7 +15,7 @@ namespace _CODE._NETCODE
         [SerializeField] private Camera camera;
         [SerializeField] private CinemachineBrain brain;
         [SerializeField] private List<CinemachineVirtualCamera> cinemachineStaff;
-        [SerializeField] private FirstPersonCharacterInput personController;
+        [SerializeField] private PlayerInput personController;
         [SerializeField] private AnimationController animController;
         [SerializeField] private GameObject uiStats;
         [SerializeField] private GameObject debugStats;
