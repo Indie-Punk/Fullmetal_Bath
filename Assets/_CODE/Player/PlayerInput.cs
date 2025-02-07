@@ -1,3 +1,4 @@
+using System;
 using _CODE.Stats;
 using ECM2;
 using UnityEngine;
@@ -10,6 +11,8 @@ namespace _CODE.Player
     
     public class PlayerInput : MonoBehaviour
     {
+        public Action OnRunning;
+        public Action OnUnRunning;
         [SerializeField] float maxWalkSpeed = 2;
         [SerializeField] float maxRunSpeed = 3;
         private Character _character;
@@ -68,7 +71,7 @@ namespace _CODE.Player
         void Crouch()
         {
             
-            if (Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.C))
+            if ((Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.C)) && !isRunning)
                 _character.Crouch();
             else if (Input.GetKeyUp(KeyCode.LeftControl) || Input.GetKeyUp(KeyCode.C))
                 _character.UnCrouch();
@@ -76,12 +79,17 @@ namespace _CODE.Player
         
         void Sprint(Vector2 inputMove)
         {
-            if (Input.GetKeyDown(KeyCode.LeftShift) && _statsManager.stamina.Value > 20)
+            if (Input.GetKeyDown(KeyCode.LeftShift) && _statsManager.stamina.Value > 20 && !_character.IsCrouched())
             {
+                if (!isRunning)
+                    OnRunning?.Invoke();
                 isRunning = true;
             }
             else if (Input.GetKeyUp(KeyCode.LeftShift) || _statsManager.stamina.Value <= 1 || inputMove.y < 0 || _character.IsCrouched())
             {
+                
+                if (isRunning)
+                    OnUnRunning?.Invoke();
                 isRunning = false;
             }
             if (isRunning)

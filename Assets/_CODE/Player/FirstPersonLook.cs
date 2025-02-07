@@ -1,4 +1,5 @@
 ﻿using System;
+using _CODE.Player;
 using Cinemachine;
 using ECM2.Examples.FirstPerson;
 using Unity.Netcode;
@@ -23,7 +24,7 @@ namespace _CODE
         public float maxPitch = 80.0f;
         
         private FirstPersonCharacter _character;
-        
+        [SerializeField] private PlayerInput input;
         
         
         
@@ -33,6 +34,8 @@ namespace _CODE
 
         [Space(15.0f)] [Tooltip("Cinemachine Virtual Camera positioned at desired crouched height.")]
         [SerializeField] private CinemachineVirtualCamera crouchedCamera;
+        
+        [SerializeField] private CinemachineVirtualCamera runningCamera;
         
         [FormerlySerializedAs("unCrouchedCamera")]
         [Tooltip("Cinemachine Virtual Camera positioned at desired un-crouched height.")]
@@ -48,6 +51,7 @@ namespace _CODE
         
         private CinemachineBasicMultiChannelPerlin _normalNoiseProfile;
         private CinemachineBasicMultiChannelPerlin _crouchedNoiseProfile;
+        private CinemachineBasicMultiChannelPerlin _runNoiseProfile;
         private float _cameraTargetPitch;
         private bool _isLookingAt;
         
@@ -68,17 +72,26 @@ namespace _CODE
             {
                 _crouchedNoiseProfile = crouchedCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
             }
+            if (runningCamera != null)
+            {
+                _runNoiseProfile = runningCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+            }
+            
         }
         
 
         private void OnEnable()
         {
+            input.OnRunning += OnRunning;
+            input.OnUnRunning += OnUnRunning;
             _character.Crouched += OnCrouched;
             _character.UnCrouched += OnUnCrouched;
         }
 
         private void OnDisable()
         {
+            input.OnRunning -= OnRunning;
+            input.OnUnRunning -= OnUnRunning;
             _character.Crouched -= OnCrouched;
             _character.UnCrouched -= OnUnCrouched;
         }
@@ -130,10 +143,28 @@ namespace _CODE
         //     UpdateNoiseAmplitude();
         // }
         
+        private void OnRunning()
+        {
+            crouchedCamera.Priority = 10;
+            normalCamera.Priority = 10;
+            runningCamera.Priority = 11;
+        }
+
+        /// <summary>
+        /// When character un-crouches, toggle Crouched / UnCrouched cameras.
+        /// </summary>
+        private void OnUnRunning()
+        {
+            crouchedCamera.Priority = 10;
+            normalCamera.Priority = 11;
+            runningCamera.Priority = 10;
+        }
+        
         private void OnCrouched()
         {
             crouchedCamera.Priority = 11;
             normalCamera.Priority = 10;
+            runningCamera.Priority = 10;
         }
 
         /// <summary>
@@ -143,6 +174,7 @@ namespace _CODE
         {
             crouchedCamera.Priority = 10;
             normalCamera.Priority = 11;
+            runningCamera.Priority = 10;
         }
         
         public float EaseInCubic(float start, float end, float value)
@@ -171,6 +203,14 @@ namespace _CODE
             {
                 float speedRatio = currentSpeed / _character.maxWalkSpeedCrouched;
                 _crouchedNoiseProfile.m_AmplitudeGain = 
+                    EaseInCubic(0, _character.maxWalkSpeedCrouched, speedRatio) *
+                    cameraNoiseAmplitudeMultiplier;
+            }
+            else if (input.IsRunning)
+            {
+                
+                float speedRatio = currentSpeed / _character.maxWalkSpeed;
+                _runNoiseProfile.m_AmplitudeGain =
                     EaseInCubic(0, _character.maxWalkSpeedCrouched, speedRatio) *
                     cameraNoiseAmplitudeMultiplier;
             }
