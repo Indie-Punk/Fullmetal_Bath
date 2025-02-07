@@ -17,7 +17,7 @@ namespace _CODE
         float _kickTimer;
 
 
-        private PushableObject _pushableObject;
+        public PushableObject _pushableObject;
         public void Kick(PushableObject pushableObject)
         {
             
@@ -32,16 +32,9 @@ namespace _CODE
 
         public void KickImpact()
         {
-            StartCoroutine(KickCoroutine());
+            _pushableObject?.PushRpc(forcePoint.forward * kickForce);
         }
         
-        IEnumerator KickCoroutine()
-        {
-            yield return new WaitForSeconds(.45f);
-            _pushableObject?.PushRpc(forcePoint.forward * kickForce);
-
-        }
-
         private void Update()
         {
             _kickTimer -= Time.deltaTime;

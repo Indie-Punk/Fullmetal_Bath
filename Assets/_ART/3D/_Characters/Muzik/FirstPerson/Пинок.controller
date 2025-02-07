@@ -7,8 +7,8 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: "\u0410\u0440\u043C\u0430\u0442\u0443\u0440\u0430|\u041F\u0438\u043D\u043E\u043A"
-  m_Speed: 1
+  m_Name: Kick
+  m_Speed: 1.4
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: -5875783701072341846}
@@ -21,7 +21,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: -4511463950653654743, guid: df763dbd33f0e1d4ca186eed438908e4, type: 3}
+  m_Motion: {fileID: 7400000, guid: 34fc0575e8eb5d048887eb0a07412aaf, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 

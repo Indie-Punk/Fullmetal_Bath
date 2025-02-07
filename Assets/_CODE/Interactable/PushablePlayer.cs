@@ -11,7 +11,7 @@ namespace _CODE.Interactable
             base.OnNetworkSpawn();
         }
 
-        [Rpc(SendTo.Server)]
+        [Rpc(SendTo.Everyone)]
         public override void PushRpc(Vector3 force)
         {
             // if (!IsOwner)
