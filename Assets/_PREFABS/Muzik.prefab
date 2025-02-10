@@ -11678,6 +11678,7 @@ GameObject:
   - component: {fileID: 79436814180525323}
   - component: {fileID: 5792122244035414919}
   - component: {fileID: 7182953778101449444}
+  - component: {fileID: 6432117599165978411}
   m_Layer: 0
   m_Name: cm
   m_TagString: Untagged
@@ -11753,6 +11754,19 @@ MonoBehaviour:
   CameraRadius: 0.2
   DampingIntoCollision: 0
   DampingFromCollision: 2
+--- !u!114 &6432117599165978411
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8966829749951570863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4c41ac9245b87c4192012080077d830, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Damping: 0.35
 --- !u!1 &8978737528228513294
 GameObject:
   m_ObjectHideFlags: 0

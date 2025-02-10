@@ -79,13 +79,15 @@ namespace _CODE.Player
         
         void Sprint(Vector2 inputMove)
         {
-            if (Input.GetKeyDown(KeyCode.LeftShift) && _statsManager.stamina.Value > 20 && !_character.IsCrouched())
+            if (Input.GetKeyDown(KeyCode.LeftShift) && _statsManager.stamina.Value > 20 && !_character.IsCrouched() 
+                && !_character.IsFalling() && _character.speed > 0 && inputMove.y >= 0)
             {
                 if (!isRunning)
                     OnRunning?.Invoke();
                 isRunning = true;
             }
-            else if (Input.GetKeyUp(KeyCode.LeftShift) || _statsManager.stamina.Value <= 1 || inputMove.y < 0 || _character.IsCrouched())
+            else if (Input.GetKeyUp(KeyCode.LeftShift) || _statsManager.stamina.Value <= 1 || _character.IsCrouched()
+                     || _character.IsFalling() || inputMove.y < 0)
             {
                 
                 if (isRunning)
