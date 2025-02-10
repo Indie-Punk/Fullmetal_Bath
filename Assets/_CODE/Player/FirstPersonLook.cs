@@ -22,6 +22,11 @@ namespace _CODE
         public float minPitch = -80.0f;
         [Tooltip("How far in degrees can you move the camera up.")]
         public float maxPitch = 80.0f;
+        [Space(15.0f)]
+        [Tooltip("How far in degrees can you move the camera down.")]
+        public float minYaw = -180.0f;
+        [Tooltip("How far in degrees can you move the camera up.")]
+        public float maxYaw = 180.0f;
         
         private FirstPersonCharacter _character;
         [SerializeField] private PlayerInput input;
@@ -80,16 +85,27 @@ namespace _CODE
         }
         
 
-        private void OnEnable()
+        
+        public override void OnNetworkSpawn()
         {
+            base.OnNetworkSpawn();
+            crouchedCamera.Priority = 0;
+            normalCamera.Priority = 0;
+            runningCamera.Priority = 0;
+            if (!IsOwner)
+                return;
             input.OnRunning += OnRunning;
             input.OnUnRunning += OnUnRunning;
             _character.Crouched += OnCrouched;
             _character.UnCrouched += OnUnCrouched;
         }
 
-        private void OnDisable()
+        
+        public override void OnNetworkDespawn()
         {
+            base.OnNetworkDespawn();
+            if (!IsOwner)
+                return;
             input.OnRunning -= OnRunning;
             input.OnUnRunning -= OnUnRunning;
             _character.Crouched -= OnCrouched;
@@ -113,8 +129,7 @@ namespace _CODE
 
             lookInput *= mouseSensitivity;
 
-            _character.AddControlYawInput(lookInput.x);
-            // _character.AddControlPitchInput(invertLook ? -lookInput.y : lookInput.y, minPitch, maxPitch);
+            _character.AddControlYawInput(lookInput.x, minYaw, maxYaw);
             AddControlPitchInputRpc(lookInput.y);
 
         }
@@ -122,12 +137,6 @@ namespace _CODE
         [Rpc(SendTo.Everyone)]
         void AddControlPitchInputRpc(float lookInputY)
         {
-            // if (OwnerClientId == 1)
-            // {
-            //     Debug.Log("client " + OwnerClientId + ": " + lookInputY);
-            //     Debug.Log("client " + OwnerClientId + " minPitch: " + minPitch);
-            //     Debug.Log("client " + OwnerClientId + " maxPitch: " + maxPitch);
-            // }
             _character.AddControlPitchInput(invertLook ? -lookInputY : lookInputY, minPitch, maxPitch);
         }
         

@@ -11,19 +11,39 @@ namespace ECM2.Examples.FirstPerson
         [Tooltip("The first person camera parent.")]
         public GameObject cameraParent;
 
-        private float _cameraPitch;
+        public float _cameraPitch;
+        public float _cameraYaw;
         
         /// <summary>
         /// Add input (affecting Yaw).
         /// This is applied to the Character's rotation.
         /// </summary>
 
-        public virtual void AddControlYawInput(float value)
+        public virtual void AddControlYawInput(float value, float minYaw = -180, float maxYaw = 180)
         {
             if (value != 0.0f)
-                AddYawInput(value);
+            {
+                if (isPaused)
+                    _cameraYaw = MathLib.ClampAngle(_cameraYaw + value, minYaw, maxYaw);
+                else
+                {
+                    AddYawInput(value);
+                    _cameraYaw = 0;
+                }
+            }
         }
 
+        public void SetCameraYaw(float value)
+        {
+            _cameraYaw = value;
+        }
+
+        public void SetDefaultCameraValues()
+        {
+            _cameraYaw = 0;
+            _cameraPitch = 0;
+        }
+        
         /// <summary>
         /// Add input (affecting Pitch).
         /// This is applied to the cameraParent's local rotation.
@@ -41,7 +61,7 @@ namespace ECM2.Examples.FirstPerson
 
         protected virtual void UpdateCameraParentRotation()
         {
-            cameraParent.transform.localRotation = Quaternion.Euler(_cameraPitch, 0.0f, 0.0f);
+            cameraParent.transform.localRotation = Quaternion.Euler(_cameraPitch, _cameraYaw, 0.0f);
         }
         
         /// <summary>

@@ -5314,6 +5314,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8717735673714616225}
   - component: {fileID: 6433958556743507821}
+  - component: {fileID: 7933789966773018573}
   - component: {fileID: 8287896631520015861}
   - component: {fileID: 7225158495143978968}
   - component: {fileID: 4256130669384961345}
@@ -5323,7 +5324,6 @@ GameObject:
   - component: {fileID: 4416980852006067623}
   - component: {fileID: 4783168383449101777}
   - component: {fileID: 2961224824421869902}
-  - component: {fileID: 7933789966773018573}
   - component: {fileID: 3390005542469084982}
   - component: {fileID: 8768408877748231178}
   m_Layer: 3
@@ -5379,6 +5379,35 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
+--- !u!114 &7933789966773018573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4483907686874501748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3196347b302454992f046b15d43f369, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  character: {fileID: 7225158495143978968}
+  look: {fileID: 8758110730352720512}
+  characterMovement: {fileID: 8287896631520015861}
+  kickController: {fileID: 8866267568799648065}
+  raycastPos: {fileID: 8322464771479601814}
+  burpController: {fileID: 1871410585490032407}
+  interactionLayerMask:
+    serializedVersion: 2
+    m_Bits: 8
+  takePos: {fileID: 2819538384323292230}
+  interactItem: {fileID: 0}
+  pushForce: 10
+  torqueForce: 10
+  isSit: 0
+  meatPrefab: {fileID: 794741491956747158, guid: 2ee48b7be7e7f2d4a825f3832803c427, type: 3}
+  sitPlace: {fileID: 0}
 --- !u!114 &8287896631520015861
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5473,6 +5502,8 @@ MonoBehaviour:
   _standingDownwardForceScale: 1
   _camera: {fileID: 4449349076844017677}
   cameraParent: {fileID: 8367466620807292519}
+  _cameraPitch: 0
+  _cameraYaw: 0
 --- !u!114 &4256130669384961345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5504,6 +5535,8 @@ MonoBehaviour:
   mouseSensitivity: {x: 1, y: 1}
   minPitch: -80
   maxPitch: 80
+  minYaw: -180
+  maxYaw: 180
   input: {fileID: 4256130669384961345}
   cameraTarget: {fileID: 0}
   crouchedCamera: {fileID: 5491587400649191464}
@@ -5647,32 +5680,6 @@ MonoBehaviour:
   uiStats: {fileID: 5058315517881503766}
   debugStats: {fileID: 2351139406739520791}
   audioListener: {fileID: 8045006676165402530}
---- !u!114 &7933789966773018573
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4483907686874501748}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f3196347b302454992f046b15d43f369, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  kickController: {fileID: 8866267568799648065}
-  raycastPos: {fileID: 8322464771479601814}
-  burpController: {fileID: 1871410585490032407}
-  interactionLayerMask:
-    serializedVersion: 2
-    m_Bits: 8
-  takePos: {fileID: 2819538384323292230}
-  interactItem: {fileID: 0}
-  pushForce: 10
-  torqueForce: 10
-  isSit: 0
-  meatPrefab: {fileID: 794741491956747158, guid: 2ee48b7be7e7f2d4a825f3832803c427, type: 3}
-  sitPlace: {fileID: 0}
 --- !u!114 &3390005542469084982
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11734,7 +11741,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd6043bde05a7fc4cba197d06915c1e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Damping: {x: 0, y: 0, z: 0}
+  Damping: {x: 0.35, y: 0.35, z: 0.35}
   ShoulderOffset: {x: 0, y: 0, z: 0}
   VerticalArmLength: 0
   CameraSide: 1
