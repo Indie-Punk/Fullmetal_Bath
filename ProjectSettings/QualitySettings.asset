@@ -163,10 +163,4 @@ QualitySettings:
     terrainMaxTrees: 50
     excludedTargetPlatforms: []
   m_TextureMipmapLimitGroupNames: []
-  m_PerPlatformDefaultQuality:
-    GameCoreScarlett: 0
-    GameCoreXboxOne: 1
-    PS4: 1
-    PS5: 0
-    Server: 1
-    Standalone: 1
+  m_PerPlatformDefaultQuality: {}

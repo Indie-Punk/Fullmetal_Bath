@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace _CODE
@@ -10,18 +11,43 @@ namespace _CODE
         [SerializeField] private float currentSpeed;
         [SerializeField] private Vector2 currentTurn;
         [SerializeField] private Vector2 turnForce;
+        [SerializeField] private bool debug;
+        [SerializeField] private int transmission = 1;
+        [SerializeField] private List<float> speed;
+        private void Update()
+        {
+            DebugInput();
+        }
 
+        void DebugInput()
+        {
+            if (!debug)
+                return;
+            var horizontal = Input.GetAxis("Horizontal");
+            var vertical = Input.GetAxis("Vertical");
+            if (Input.GetKeyDown(KeyCode.E))
+                SetTransmission(transmission + 1);
+            if (Input.GetKeyDown(KeyCode.R))
+                SetTransmission(transmission - 1);
+            AddTurnForce(new Vector2(horizontal, vertical));
+        }
         private void FixedUpdate()
         {
             currentTurn.x = Mathf.Clamp(currentTurn.x + turnForce.x, turnLimit.x, turnLimit.y);
             currentTurn.y = Mathf.Clamp(currentTurn.y + turnForce.y, turnLimit.x, turnLimit.y);
-            smallDrill.transform.position += transform.up * currentSpeed * Time.fixedDeltaTime;
+            smallDrill.transform.position -= smallDrill.transform.up * currentSpeed * Time.fixedDeltaTime;
             smallDrill.transform.localEulerAngles = new Vector3(currentTurn.x,0, currentTurn.y);
         }
 
-        public void SetCurrentSpeed(float speed)
+        public void SetTransmission(int value)
         {
-            currentSpeed = speed;
+            transmission = value;
+            transmission = Mathf.Clamp(transmission, 0, 3);
+            currentSpeed = speed[transmission];
+        }
+        public void SetCurrentSpeed(float value)
+        {
+            currentSpeed = value;
         }
         public void AddTurnForce(Vector2 force)
         {
