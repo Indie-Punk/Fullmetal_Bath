@@ -2864,7 +2864,7 @@ GameObject:
   - component: {fileID: 2089330668}
   - component: {fileID: 2089330667}
   - component: {fileID: 2089330666}
-  - component: {fileID: 2089330665}
+  - component: {fileID: 2089330672}
   m_Layer: 0
   m_Name: First Person Character
   m_TagString: Player
@@ -2872,20 +2872,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2089330665
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2089330664}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba598d44e33b26849a4d3d6005e49fd1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxWalkSpeed: 2
-  maxRunSpeed: 3
 --- !u!114 &2089330666
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3064,6 +3050,20 @@ Transform:
   - {fileID: 1832218742}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2089330672
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2089330664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f82bc2d1770c4e2dac19715b63057b4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxWalkSpeed: 2
+  maxRunSpeed: 3
 --- !u!1 &2103459953
 GameObject:
   m_ObjectHideFlags: 0
@@ -3105,7 +3105,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2121340212}
-  - component: {fileID: 2121340211}
+  - component: {fileID: 2121340213}
   m_Layer: 0
   m_Name: WorldGenerator
   m_TagString: Untagged
@@ -3113,29 +3113,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2121340211
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2121340210}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e7f2f1ff8f674a73b155a2fec4f49750, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  chunkRenderer: {fileID: 5463924039471823163, guid: 622df6058c70b884888a919cfe0c4844, type: 3}
-  WIDTH: 32
-  HEIGHT: 32
-  DEPTH: 32
-  frequency: 0.5
-  scale: 1
-  seed: 0
-  noiseMax: 0
-  noiseMin: 0
-  twist: 0
-  turbulence: 0
 --- !u!4 &2121340212
 Transform:
   m_ObjectHideFlags: 0
@@ -3151,6 +3128,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2121340213
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2121340210}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b0cef023d22423893e8b52db97d47fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chunkRenderer: {fileID: 5463924039471823163, guid: 622df6058c70b884888a919cfe0c4844, type: 3}
 --- !u!114 &1483927627737953419
 MonoBehaviour:
   m_ObjectHideFlags: 0

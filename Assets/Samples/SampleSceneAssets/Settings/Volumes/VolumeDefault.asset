@@ -450,6 +450,28 @@ MonoBehaviour:
   gain:
     m_OverrideState: 1
     m_Value: {x: 1, y: 1, z: 1, w: 0}
+--- !u!114 &-5194654552030994918
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4df8c151eae54d846b0a701c08d972ce, type: 3}
+  m_Name: Dithering
+  m_EditorClassIdentifier: 
+  active: 1
+  PatternIndex:
+    m_OverrideState: 1
+    m_Value: 0
+  DitherThreshold:
+    m_OverrideState: 1
+    m_Value: 0
+  DitherScale:
+    m_OverrideState: 1
+    m_Value: 0
 --- !u!114 &-4472733998901823868
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -1329,8 +1351,8 @@ MonoBehaviour:
   - {fileID: 1567189103931021014}
   - {fileID: -2927502237476650339}
   - {fileID: -9159237746712043089}
-  - {fileID: 2820860418335550054}
-  - {fileID: 87169697767229282}
+  - {fileID: 7843525723314904473}
+  - {fileID: -5194654552030994918}
 --- !u!114 &87169697767229282
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -2598,6 +2620,28 @@ MonoBehaviour:
     m_OverrideState: 1
     m_Value: 0
   customSeed:
+    m_OverrideState: 1
+    m_Value: 0
+--- !u!114 &7843525723314904473
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f946aea2a4821244b6ba2812d186754, type: 3}
+  m_Name: PixelationEffect
+  m_EditorClassIdentifier: 
+  active: 1
+  Width:
+    m_OverrideState: 1
+    m_Value: 0
+  Height:
+    m_OverrideState: 1
+    m_Value: 0
+  Color:
     m_OverrideState: 1
     m_Value: 0
 --- !u!114 &8049981929359091865

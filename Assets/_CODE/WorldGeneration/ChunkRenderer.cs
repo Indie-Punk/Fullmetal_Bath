@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using _CODE.WorldGeneration;
 using UnityEngine;
@@ -7,22 +8,65 @@ using UnityEngine.Serialization;
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class ChunkRenderer : MonoBehaviour
 {
-    public const int ChunkWidth = 48;
-    public const int ChunkHeight = 48;
-    public const float BlockScale = .25f;
+    public const int ChunkWidth = 64;
+    public const int ChunkHeight = 64;
+    public const float BlockScale = .125f;
 
     public ChunkData ChunkData;
     public GameWorld ParentWorld;
-    // public BlockType[,,] Blocks = new BlockType[ChunkWidth, ChunkHeight, ChunkWidth];
 
     private List<Vector3> verticies = new List<Vector3>();
+    private List<Vector2> uvs = new List<Vector2>();
     private List<int> triangles = new List<int>();
-
+    private Mesh chunkMesh;
+    
     void Start()
     {
-        Mesh chunkMesh = new Mesh();
+        chunkMesh = new Mesh();
+        
+        RegenerateMesh();
 
+        GetComponent<MeshFilter>().sharedMesh = chunkMesh;
+    }
 
+    public void SpawnBlock(Vector3Int blockPosition)
+    {
+        ChunkData.Blocks[blockPosition.x, blockPosition.y, blockPosition.z] = BlockType.Rock;
+        RegenerateMesh();
+    }
+    public void DestroyBlock(Vector3Int blockPosition)
+    {
+        ChunkData.Blocks[blockPosition.x, blockPosition.y, blockPosition.z] = BlockType.Air;
+        RegenerateMesh();
+    }
+
+    public void DestroySphere(Vector3Int blockPosition, int radius)
+    {
+            for (int x = -radius; x <= radius; x++)
+            {
+                for (int y = -radius; y <= radius; y++)
+                {
+                    for (int z = -radius; z <= radius; z++)
+                    {
+                        if (x * x + y * y + z * z <= radius * radius)
+                        {
+                            
+                            ChunkData.Blocks[blockPosition.x + x, blockPosition.y + y, blockPosition.z + z] = BlockType.Air;
+                            // DestroyBlock(blockPosition + new Vector3Int(x,y,z));
+                            // Console.WriteLine($"Cube at ({centerX + x}, {centerY + y}, {centerZ + z})");
+                        }
+                    }
+                }
+            }
+            RegenerateMesh();
+    }
+
+    private void RegenerateMesh()
+    {
+        verticies.Clear();
+        uvs.Clear();
+        triangles.Clear();
+        
         for (int y = 0; y < ChunkHeight; y++)
         {
             for (int x = 0; x < ChunkWidth; x++)
@@ -34,18 +78,17 @@ public class ChunkRenderer : MonoBehaviour
             }
         }
 
+        chunkMesh.triangles = Array.Empty<int>();
         chunkMesh.vertices = verticies.ToArray();
+        chunkMesh.uv = uvs.ToArray();
         chunkMesh.triangles = triangles.ToArray();
 
         chunkMesh.Optimize();
         
         chunkMesh.RecalculateNormals();
         chunkMesh.RecalculateBounds();
-
-        GetComponent<MeshFilter>().mesh = chunkMesh;
         GetComponent<MeshCollider>().sharedMesh = chunkMesh;
     }
-
     private void GenerateBlock(int x, int y, int z)
     {
         var blockPosition = new Vector3Int(x, y, z);
@@ -168,6 +211,11 @@ public class ChunkRenderer : MonoBehaviour
 
     private void AddLastVerticiesSquare()
     {
+        uvs.Add(new Vector2(0,0));
+        uvs.Add(new Vector2(0,1));
+        uvs.Add(new Vector2(1,0));
+        uvs.Add(new Vector2(1,1));
+        
         triangles.Add(verticies.Count - 4);
         triangles.Add(verticies.Count - 3);
         triangles.Add(verticies.Count - 2);

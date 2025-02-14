@@ -5,17 +5,17 @@ namespace _CODE.WorldGeneration
 {
     public class TerrainGenerator : MonoBehaviour
     {
-        public static float scale =.2f;
-        public static BlockType[,,] GenerateCave(float offsetX, float offsetZ)
+        [SerializeField] float scale =.2f;
+        public BlockType[,,] GenerateCave(float offsetX, float offsetZ)
         {
             var result = new BlockType[ChunkRenderer.ChunkWidth, ChunkRenderer.ChunkHeight, ChunkRenderer.ChunkWidth];
             for (int x = 0; x < ChunkRenderer.ChunkWidth; x++)
             {
                 for (int z = 0; z < ChunkRenderer.ChunkWidth; z++)
                 {
-                    float height  = Mathf.PerlinNoise((x/4f+offsetX) * scale, (z/4f+offsetZ) * scale) * 25 + 10;
+                    float height  = Mathf.PerlinNoise((x/8f+offsetX) * scale, (z/8f+offsetZ) * scale) * 10 +15;
                     
-                    for (int y = 0; y < height; y++)
+                    for (int y = 0; y < height && y < ChunkRenderer.ChunkHeight; y++)
                     {
                         result[x, y, z] = BlockType.Rock;
                     }
