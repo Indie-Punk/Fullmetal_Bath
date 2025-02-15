@@ -8,9 +8,9 @@ using UnityEngine.Serialization;
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class ChunkRenderer : MonoBehaviour
 {
-    public const int ChunkWidth = 64;
-    public const int ChunkHeight = 64;
-    public const float BlockScale = .125f;
+    public const int ChunkWidth = 32;
+    public const int ChunkHeight = 128;
+    public const float BlockScale = .25f;
 
     public ChunkData ChunkData;
     public GameWorld ParentWorld;

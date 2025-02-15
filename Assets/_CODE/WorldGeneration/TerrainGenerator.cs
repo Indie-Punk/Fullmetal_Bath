@@ -8,12 +8,16 @@ namespace _CODE.WorldGeneration
         [SerializeField] float scale =.2f;
         public BlockType[,,] GenerateCave(float offsetX, float offsetZ)
         {
+            FastNoiseLite noise = new FastNoiseLite();
+            noise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
+            float f = noise.GetNoise(1, 2);
+            
             var result = new BlockType[ChunkRenderer.ChunkWidth, ChunkRenderer.ChunkHeight, ChunkRenderer.ChunkWidth];
             for (int x = 0; x < ChunkRenderer.ChunkWidth; x++)
             {
                 for (int z = 0; z < ChunkRenderer.ChunkWidth; z++)
                 {
-                    float height  = Mathf.PerlinNoise((x/8f+offsetX) * scale, (z/8f+offsetZ) * scale) * 10 +15;
+                    float height  = Mathf.PerlinNoise((x/4f+offsetX) * scale, (z/4f+offsetZ) * scale) * 10 +15;
                     
                     for (int y = 0; y < height && y < ChunkRenderer.ChunkHeight; y++)
                     {
