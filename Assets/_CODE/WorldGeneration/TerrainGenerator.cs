@@ -1,43 +1,85 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
+using UnityEngine.UI;
 
 namespace _CODE.WorldGeneration
 {
+    
     public class TerrainGenerator : MonoBehaviour
     {
         [SerializeField] float scale =.2f;
+        public float BaseHeight = 8;
+        public NoiseOctaveSettings[] Octaves;
+        public NoiseOctaveSettings DomainWarp;
+        
+        [Serializable]
+        public class NoiseOctaveSettings
+        {
+            public FastNoiseLite.NoiseType NoiseType;
+            public float Frequency = 0.2f;
+            public float Amplitude = 1;
+        }
+
+        private FastNoiseLite[] octaveNoises;
+
+        private FastNoiseLite warpNoise;
+        public void Awake()
+        {
+            Init();
+        }
+
+        public void Init()
+        {
+            octaveNoises = new FastNoiseLite[Octaves.Length];
+            for (int i = 0; i < Octaves.Length; i++)
+            {
+                octaveNoises[i] = new FastNoiseLite();
+                octaveNoises[i].SetNoiseType(Octaves[i].NoiseType);
+                octaveNoises[i].SetFrequency(Octaves[i].Frequency);
+            }
+            
+            warpNoise = new FastNoiseLite();
+            warpNoise.SetNoiseType(DomainWarp.NoiseType);
+            warpNoise.SetFrequency(DomainWarp.Frequency);
+            warpNoise.SetDomainWarpAmp(DomainWarp.Amplitude);
+        }
         public BlockType[,,] GenerateCave(float offsetX, float offsetZ)
         {
-            FastNoiseLite noise = new FastNoiseLite();
-            noise.SetNoiseType(FastNoiseLite.NoiseType.Perlin);
-            float f = noise.GetNoise(1, 2);
             
             var result = new BlockType[ChunkRenderer.ChunkWidth, ChunkRenderer.ChunkHeight, ChunkRenderer.ChunkWidth];
             for (int x = 0; x < ChunkRenderer.ChunkWidth; x++)
             {
                 for (int z = 0; z < ChunkRenderer.ChunkWidth; z++)
                 {
-                    float height  = Mathf.PerlinNoise((x/4f+offsetX) * scale, (z/4f+offsetZ) * scale) * 10 +15;
-                    
-                    for (int y = 0; y < height && y < ChunkRenderer.ChunkHeight; y++)
+                    //float height  = Mathf.PerlinNoise((x/4f+offsetX) * scale, (z/4f+offsetZ) * scale) * 10 +15;
+                    float height = GetHeight(x * ChunkRenderer.BlockScale + offsetX,
+                        z * ChunkRenderer.BlockScale + offsetZ);
+                    for (int y = 0; y < height /ChunkRenderer.BlockScale; y++)
                     {
                         result[x, y, z] = BlockType.Rock;
                     }
-                    // for (int y = 0; y < ChunkRenderer.ChunkWidth; y++)
-                    // {
-                    //     float perlin = PerlinNoise3DAlt((x * scale), 
-                    //         (y * scale), (z * scale) );
-                    //     // Debug.Log(perlin);
-                    //     if (perlin > .1f)
-                    //     {
-                    //         result[x,y,z] = 1;
-                    //     }
-                    // }
                 }
             }
 
             return result;
         }
+
+        public float GetHeight(float x, float y)
+        {
+            warpNoise.DomainWarp(ref x, ref y);
+            
+            float result = BaseHeight;
+
+            for (int i = 0; i < Octaves.Length; i++)
+            {
+                float noise = octaveNoises[i].GetNoise(x, y);
+                result += noise * Octaves[i].Amplitude / 2;
+            }
+
+            return result;
+        }
+        
         #region Noises
         
         public float perlinMax;

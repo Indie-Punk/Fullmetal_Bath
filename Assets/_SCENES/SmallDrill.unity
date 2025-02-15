@@ -3328,6 +3328,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scale: 0.2
+  BaseHeight: 8
+  Octaves:
+  - NoiseType: 0
+    Frequency: 0.25
+    Amplitude: 0.5
+  - NoiseType: 0
+    Frequency: 0.03333
+    Amplitude: 10
+  - NoiseType: 3
+    Frequency: 0.04
+    Amplitude: 3
+  DomainWarp:
+    NoiseType: 0
+    Frequency: 0.06
+    Amplitude: 15
   perlinMax: 1
   perlinMin: 0
   twist: 1
@@ -3392,11 +3407,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7146502692774156471, guid: 44937ae91a543bc42809d7d23d40232f, type: 3}
       propertyPath: m_LocalScale.z
-      value: 5.760636
+      value: 18.072844
       objectReference: {fileID: 0}
     - target: {fileID: 7146502692774156471, guid: 44937ae91a543bc42809d7d23d40232f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 28.4
+      value: 27.21
       objectReference: {fileID: 0}
     - target: {fileID: 7146502692774156471, guid: 44937ae91a543bc42809d7d23d40232f, type: 3}
       propertyPath: m_LocalPosition.y
@@ -3404,7 +3419,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7146502692774156471, guid: 44937ae91a543bc42809d7d23d40232f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 11.7
+      value: 7.34
       objectReference: {fileID: 0}
     - target: {fileID: 7146502692774156471, guid: 44937ae91a543bc42809d7d23d40232f, type: 3}
       propertyPath: m_LocalRotation.w

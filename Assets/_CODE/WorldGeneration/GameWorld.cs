@@ -2,12 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace _CODE.WorldGeneration
 {
     public class GameWorld : MonoBehaviour
     {
-        private const int ViewRadius = 2;
+        private const int ViewRadius = 3;
         [SerializeField] private ChunkRenderer chunkRenderer;
         [SerializeField] private TerrainGenerator Generator;
         [SerializeField] private Transform drill;
@@ -38,6 +39,19 @@ namespace _CODE.WorldGeneration
             }
         }
 
+        [ContextMenu("Regenerate world")]
+        public void Regenerate()
+        {
+            Generator.Init();
+            foreach (var chunkData in ChunkDatas)
+            {
+                Destroy(chunkData.Value.Renderer.gameObject);
+            }
+            
+            ChunkDatas.Clear();
+
+            StartCoroutine(Generate(false));
+        }
         private void LoadChunkAt(Vector2Int chunkPosition)
         {
             float xPos = chunkPosition.x * ChunkRenderer.ChunkWidth*ChunkRenderer.BlockScale;
@@ -67,7 +81,6 @@ namespace _CODE.WorldGeneration
             CheckInput();
         }
 
-        private float destroyingTimer;
         private float interactionTimer;
         private void CheckInput()
         {
@@ -102,17 +115,22 @@ namespace _CODE.WorldGeneration
                     }
                 }
 
-                interactionTimer = .1f;
+                interactionTimer = .05f;
             }
             else
             {
-                interactionTimer = .1f;
+                interactionTimer = .05f;
             }
         }
 
         public Vector2Int GetChunkContainingBlock(Vector3Int blockWorldPos)
         {
-            return new Vector2Int(blockWorldPos.x / ChunkRenderer.ChunkWidth, blockWorldPos.z / ChunkRenderer.ChunkWidth);
+            Vector2Int chunkPosition =  new Vector2Int(blockWorldPos.x / ChunkRenderer.ChunkWidth, blockWorldPos.z / ChunkRenderer.ChunkWidth);
+
+            if (blockWorldPos.x < 0) chunkPosition.x--;
+            if (blockWorldPos.z < 0) chunkPosition.y--;
+            
+            return chunkPosition;
         }
     }
 }
