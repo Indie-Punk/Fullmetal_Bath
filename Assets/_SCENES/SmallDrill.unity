@@ -3311,7 +3311,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b0cef023d22423893e8b52db97d47fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chunkRenderer: {fileID: 5463924039471823163, guid: 622df6058c70b884888a919cfe0c4844, type: 3}
+  chunkPrefab: {fileID: 5463924039471823163, guid: 622df6058c70b884888a919cfe0c4844, type: 3}
   Generator: {fileID: 11400000, guid: 4a19dbcbbb8219c45b43494935a286ae, type: 2}
   drill: {fileID: 2089330671}
 --- !u!114 &1483927627737953419

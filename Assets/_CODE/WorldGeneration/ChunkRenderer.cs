@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using _CODE.WorldGeneration;
+using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -9,6 +10,7 @@ using UnityEngine.Serialization;
 public class ChunkRenderer : MonoBehaviour
 {
     public const int ChunkWidth = 32;
+    public const int ChunkWidthSQ = ChunkWidth * ChunkWidth;
     public const int ChunkHeight = 128;
     public const float BlockScale = .25f;
 
@@ -19,9 +21,24 @@ public class ChunkRenderer : MonoBehaviour
     private List<Vector2> uvs = new List<Vector2>();
     private List<int> triangles = new List<int>();
     private Mesh chunkMesh;
+
+    public ChunkData leftChunk;
+    public ChunkData rightChunk;
+    public ChunkData fwdChunk;
+    public ChunkData backChunk;
+    public ChunkData downChunk;
+    
+    ProfilerMarker MeshingMarker = new ProfilerMarker(ProfilerCategory.Loading, "Meshing");
     
     void Start()
     {
+        // ParentWorld.ChunkDatas.TryGetValue(ChunkData.ChunkPosition, out downChunk);
+        ParentWorld.ChunkDatas.TryGetValue(ChunkData.ChunkPosition + Vector2Int.left, out leftChunk);
+        ParentWorld.ChunkDatas.TryGetValue(ChunkData.ChunkPosition + Vector2Int.right, out rightChunk);
+        ParentWorld.ChunkDatas.TryGetValue(ChunkData.ChunkPosition + Vector2Int.up, out fwdChunk);
+        ParentWorld.ChunkDatas.TryGetValue(ChunkData.ChunkPosition + Vector2Int.down, out backChunk);
+        
+        
         chunkMesh = new Mesh();
         
         RegenerateMesh();
@@ -31,12 +48,14 @@ public class ChunkRenderer : MonoBehaviour
 
     public void SpawnBlock(Vector3Int blockPosition)
     {
-        ChunkData.Blocks[blockPosition.x, blockPosition.y, blockPosition.z] = BlockType.Rock;
+        int index = blockPosition.x + blockPosition.y * ChunkWidthSQ + blockPosition.z * ChunkWidth;
+        ChunkData.Blocks[index] = BlockType.Rock;
         RegenerateMesh();
     }
     public void DestroyBlock(Vector3Int blockPosition)
     {
-        ChunkData.Blocks[blockPosition.x, blockPosition.y, blockPosition.z] = BlockType.Air;
+        int index = blockPosition.x + blockPosition.y * ChunkWidthSQ + blockPosition.z * ChunkWidth;
+        ChunkData.Blocks[index] = BlockType.Air;
         RegenerateMesh();
     }
 
@@ -51,7 +70,8 @@ public class ChunkRenderer : MonoBehaviour
                         if (x * x + y * y + z * z <= radius * radius)
                         {
                             
-                            ChunkData.Blocks[blockPosition.x + x, blockPosition.y + y, blockPosition.z + z] = BlockType.Air;
+                            int index = blockPosition.x + blockPosition.y * ChunkWidthSQ + blockPosition.z * ChunkWidth;
+                            ChunkData.Blocks[index] = BlockType.Air;
                             // DestroyBlock(blockPosition + new Vector3Int(x,y,z));
                             // Console.WriteLine($"Cube at ({centerX + x}, {centerY + y}, {centerZ + z})");
                         }
@@ -63,6 +83,7 @@ public class ChunkRenderer : MonoBehaviour
 
     private void RegenerateMesh()
     {
+        MeshingMarker.Begin();
         verticies.Clear();
         uvs.Clear();
         triangles.Clear();
@@ -88,6 +109,7 @@ public class ChunkRenderer : MonoBehaviour
         chunkMesh.RecalculateNormals();
         chunkMesh.RecalculateBounds();
         GetComponent<MeshCollider>().sharedMesh = chunkMesh;
+        MeshingMarker.End();
     }
     private void GenerateBlock(int x, int y, int z)
     {
@@ -109,41 +131,57 @@ public class ChunkRenderer : MonoBehaviour
             blockPosition.y >= 0 && blockPosition.y < ChunkHeight &&
             blockPosition.z >= 0 && blockPosition.z < ChunkWidth)
         {
-            return ChunkData.Blocks[blockPosition.x, blockPosition.y, blockPosition.z];
+            int index = blockPosition.x + blockPosition.y * ChunkWidthSQ + blockPosition.z * ChunkWidth;
+            return ChunkData.Blocks[index];
         }
         else
         {
             if (blockPosition.y < 0 || blockPosition.y >= ChunkHeight)
                 return BlockType.Air;
-            Vector2Int adjucentChunkPosition = ChunkData.ChunkPosition;
-            
+
+            // Vector2Int adjacentChunkPosition = ChunkData.ChunkPosition;
             if (blockPosition.x < 0)
             {
-                adjucentChunkPosition.x--;
+                if (leftChunk == null) return BlockType.Air;
+                
+                // adjacentChunkPosition.x--;
                 blockPosition.x += ChunkWidth;
+                int index = blockPosition.x + blockPosition.y * ChunkWidthSQ + blockPosition.z * ChunkWidth;
+                return leftChunk.Blocks[index];
             }
-            else if (blockPosition.x >= ChunkWidth)
+            if (blockPosition.x >= ChunkWidth)
             {
-                adjucentChunkPosition.x++;
+                if (rightChunk == null) return BlockType.Air;
+                
+                // adjacentChunkPosition.x++;
                 blockPosition.x -= ChunkWidth;
+                int index = blockPosition.x + blockPosition.y * ChunkWidthSQ + blockPosition.z * ChunkWidth;
+                return rightChunk.Blocks[index];
             }
-
-
             if (blockPosition.z < 0)
             {
-                adjucentChunkPosition.y--;
+                if (backChunk == null) return BlockType.Air;
+                
+                // adjacentChunkPosition.y--;
                 blockPosition.z += ChunkWidth;
+                int index = blockPosition.x + blockPosition.y * ChunkWidthSQ + blockPosition.z * ChunkWidth;
+                return backChunk.Blocks[index];
             }
-            else if (blockPosition.z >= ChunkWidth)
+            if (blockPosition.z >= ChunkWidth)
             {
-                adjucentChunkPosition.y++;
+                if (fwdChunk == null) return BlockType.Air;
+                // adjacentChunkPosition.y++;
                 blockPosition.z -= ChunkWidth;
+                int index = blockPosition.x + blockPosition.y * ChunkWidthSQ + blockPosition.z * ChunkWidth;
+                return fwdChunk.Blocks[index];
             }
 
-            if (ParentWorld.ChunkDatas.TryGetValue(adjucentChunkPosition, out ChunkData adjacentChunk))
-            {
-                return adjacentChunk.Blocks[blockPosition.x, blockPosition.y, blockPosition.z];
-            }
+            // if (ParentWorld.ChunkDatas.TryGetValue(adjacentChunkPosition, out var adjacentChunk))
+            // {
+            //     int index = blockPosition.x + blockPosition.y * ChunkWidthSQ + blockPosition.z * ChunkWidth;
+            //     return adjacentChunk.Blocks[index];
+            // }
+            
 
             return BlockType.Air;
         }

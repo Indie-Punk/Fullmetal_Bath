@@ -1,4 +1,5 @@
 ﻿using System;
+using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.UI;
@@ -24,6 +25,8 @@ namespace _CODE.WorldGeneration
         private FastNoiseLite[] octaveNoises;
 
         private FastNoiseLite warpNoise;
+        
+        static ProfilerMarker generationMarker = new ProfilerMarker(ProfilerCategory.Loading, "Generating");
 
         public void Init()
         {
@@ -40,10 +43,10 @@ namespace _CODE.WorldGeneration
             warpNoise.SetFrequency(DomainWarp.Frequency);
             warpNoise.SetDomainWarpAmp(DomainWarp.Amplitude);
         }
-        public BlockType[,,] GenerateCave(float offsetX, float offsetZ)
+        public BlockType[] GenerateCave(float offsetX, float offsetZ)
         {
-            
-            var result = new BlockType[ChunkRenderer.ChunkWidth, ChunkRenderer.ChunkHeight, ChunkRenderer.ChunkWidth];
+            generationMarker.Begin();
+            var result = new BlockType[ChunkRenderer.ChunkWidth * ChunkRenderer.ChunkHeight * ChunkRenderer.ChunkWidth];
             for (int x = 0; x < ChunkRenderer.ChunkWidth; x++)
             {
                 for (int z = 0; z < ChunkRenderer.ChunkWidth; z++)
@@ -53,11 +56,13 @@ namespace _CODE.WorldGeneration
                         z * ChunkRenderer.BlockScale + offsetZ);
                     for (int y = 0; y < height /ChunkRenderer.BlockScale; y++)
                     {
-                        result[x, y, z] = BlockType.Rock;
+                        int index = x + y * ChunkRenderer.ChunkWidthSQ + z * ChunkRenderer.ChunkWidth;
+                        result[index] = BlockType.Rock;
                     }
                 }
             }
 
+            generationMarker.End();
             return result;
         }
 

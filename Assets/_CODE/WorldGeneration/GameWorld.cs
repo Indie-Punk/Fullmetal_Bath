@@ -9,7 +9,7 @@ namespace _CODE.WorldGeneration
     public class GameWorld : MonoBehaviour
     {
         private const int ViewRadius = 2;
-        [SerializeField] private ChunkRenderer chunkRenderer;
+        [SerializeField] private ChunkRenderer chunkPrefab;
         [SerializeField] private TerrainGenerator Generator;
         [SerializeField] private Transform drill;
         public Dictionary<Vector2Int,ChunkData> ChunkDatas = new Dictionary<Vector2Int,ChunkData>();
@@ -26,9 +26,10 @@ namespace _CODE.WorldGeneration
 
         private IEnumerator Generate(bool wait)
         {
-            for (int x = currentPlayerChunk.x - ViewRadius; x < currentPlayerChunk.x + ViewRadius; x++)
+            int loadRadius = ViewRadius + 1;
+            for (int x = currentPlayerChunk.x - loadRadius; x <= currentPlayerChunk.x + loadRadius; x++)
             {
-                for (int y = currentPlayerChunk.y - ViewRadius; y < currentPlayerChunk.y + ViewRadius; y++)
+                for (int y = currentPlayerChunk.y - loadRadius; y <= currentPlayerChunk.y + loadRadius; y++)
                 {
                     Vector2Int chunkPosition = new Vector2Int(x,y);
                     if (ChunkDatas.ContainsKey(chunkPosition)) continue;
@@ -55,16 +56,18 @@ namespace _CODE.WorldGeneration
         }
         private void LoadChunkAt(Vector2Int chunkPosition)
         {
-            float xPos = chunkPosition.x * ChunkRenderer.ChunkWidth*ChunkRenderer.BlockScale;
+            float xPos = chunkPosition.x * ChunkRenderer.ChunkWidth * ChunkRenderer.BlockScale;
             float zPos = chunkPosition.y * ChunkRenderer.ChunkWidth * ChunkRenderer.BlockScale;
                     
             ChunkData chunkData = new ChunkData();
             chunkData.ChunkPosition = chunkPosition;
             chunkData.Blocks = Generator.GenerateCave(xPos, zPos);
             ChunkDatas.Add(chunkPosition, chunkData);
-            var chunk = Instantiate(chunkRenderer, new Vector3(xPos, 0, zPos), Quaternion.identity, transform);
+            
+            var chunk = Instantiate(chunkPrefab, new Vector3(xPos, 0, zPos), Quaternion.identity, transform);
             chunk.ChunkData = chunkData;
             chunk.ParentWorld = this;
+            
             chunkData.Renderer = chunk;
         }
 
