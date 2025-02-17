@@ -19,7 +19,6 @@ public class ChunkRenderer : MonoBehaviour
 
     private List<Vector3> verticies = new List<Vector3>();
     private List<Vector2> uvs = new List<Vector2>();
-    private List<int> triangles = new List<int>();
     private Mesh chunkMesh;
 
     public ChunkData leftChunk;
@@ -27,8 +26,29 @@ public class ChunkRenderer : MonoBehaviour
     public ChunkData fwdChunk;
     public ChunkData backChunk;
     public ChunkData downChunk;
+
+    private static int[] triangles;
     
     ProfilerMarker MeshingMarker = new ProfilerMarker(ProfilerCategory.Loading, "Meshing");
+
+    public static void InitTriangles()
+    {
+        triangles = new int[65536 * 6 / 4];
+
+        int vertexNum = 4;
+        for (int i = 0; i < triangles.Length; i += 6)
+        {
+            triangles[i] = vertexNum- 4;
+            triangles[i + 1] = vertexNum- 3;
+            triangles[i + 2] = vertexNum - 2;
+
+            triangles[i + 3] = vertexNum - 3;
+            triangles[i + 4] = vertexNum - 1;
+            triangles[i + 5] = vertexNum - 2;
+            vertexNum += 4;
+        }
+        
+    }
     
     void Start()
     {
@@ -86,15 +106,20 @@ public class ChunkRenderer : MonoBehaviour
         MeshingMarker.Begin();
         verticies.Clear();
         uvs.Clear();
-        triangles.Clear();
-        
+
+        //TO DO в будущем высоты не будет
+        int maxY = 0;
         for (int y = 0; y < ChunkHeight; y++)
         {
             for (int x = 0; x < ChunkWidth; x++)
             {
                 for (int z = 0; z < ChunkWidth; z++)
                 {
-                    GenerateBlock(x, y, z);
+                    if (GenerateBlock(x, y, z))
+                    {
+                        if (maxY < y)
+                            maxY = y;
+                    }
                 }
             }
         }
@@ -102,27 +127,31 @@ public class ChunkRenderer : MonoBehaviour
         chunkMesh.triangles = Array.Empty<int>();
         chunkMesh.vertices = verticies.ToArray();
         chunkMesh.uv = uvs.ToArray();
-        chunkMesh.triangles = triangles.ToArray();
+        chunkMesh.SetTriangles(triangles, 0, verticies.Count *6/4,0, false);
 
         chunkMesh.Optimize();
         
         chunkMesh.RecalculateNormals();
-        chunkMesh.RecalculateBounds();
+        Vector3 boundsSize = new Vector3(ChunkWidth, maxY, ChunkWidth) * BlockScale;
+        chunkMesh.bounds = new Bounds(boundsSize/2, boundsSize);
+        
+        
         GetComponent<MeshCollider>().sharedMesh = chunkMesh;
         MeshingMarker.End();
     }
-    private void GenerateBlock(int x, int y, int z)
+    private bool GenerateBlock(int x, int y, int z)
     {
         var blockPosition = new Vector3Int(x, y, z);
 
-        if (GetBlockAtPosition(blockPosition) == 0) return;
+        if (GetBlockAtPosition(blockPosition) == 0) return false;
 
         if (GetBlockAtPosition(blockPosition + Vector3Int.right) == 0) GenerateRightSide(blockPosition);
         if (GetBlockAtPosition(blockPosition + Vector3Int.left) == 0) GenerateLeftSide(blockPosition);
         if (GetBlockAtPosition(blockPosition + Vector3Int.forward) == 0) GenerateFrontSide(blockPosition);
         if (GetBlockAtPosition(blockPosition + Vector3Int.back) == 0) GenerateBackSide(blockPosition);
         if (GetBlockAtPosition(blockPosition + Vector3Int.up) == 0) GenerateTopSide(blockPosition);
-        if (GetBlockAtPosition(blockPosition + Vector3Int.down) == 0) GenerateBottomSide(blockPosition);
+        if (blockPosition.y > 0 && GetBlockAtPosition(blockPosition + Vector3Int.down) == 0) GenerateBottomSide(blockPosition);
+        return true;
     }
 
     private BlockType GetBlockAtPosition(Vector3Int blockPosition)
@@ -139,12 +168,10 @@ public class ChunkRenderer : MonoBehaviour
             if (blockPosition.y < 0 || blockPosition.y >= ChunkHeight)
                 return BlockType.Air;
 
-            // Vector2Int adjacentChunkPosition = ChunkData.ChunkPosition;
             if (blockPosition.x < 0)
             {
                 if (leftChunk == null) return BlockType.Air;
                 
-                // adjacentChunkPosition.x--;
                 blockPosition.x += ChunkWidth;
                 int index = blockPosition.x + blockPosition.y * ChunkWidthSQ + blockPosition.z * ChunkWidth;
                 return leftChunk.Blocks[index];
@@ -153,7 +180,6 @@ public class ChunkRenderer : MonoBehaviour
             {
                 if (rightChunk == null) return BlockType.Air;
                 
-                // adjacentChunkPosition.x++;
                 blockPosition.x -= ChunkWidth;
                 int index = blockPosition.x + blockPosition.y * ChunkWidthSQ + blockPosition.z * ChunkWidth;
                 return rightChunk.Blocks[index];
@@ -162,7 +188,6 @@ public class ChunkRenderer : MonoBehaviour
             {
                 if (backChunk == null) return BlockType.Air;
                 
-                // adjacentChunkPosition.y--;
                 blockPosition.z += ChunkWidth;
                 int index = blockPosition.x + blockPosition.y * ChunkWidthSQ + blockPosition.z * ChunkWidth;
                 return backChunk.Blocks[index];
@@ -170,17 +195,10 @@ public class ChunkRenderer : MonoBehaviour
             if (blockPosition.z >= ChunkWidth)
             {
                 if (fwdChunk == null) return BlockType.Air;
-                // adjacentChunkPosition.y++;
                 blockPosition.z -= ChunkWidth;
                 int index = blockPosition.x + blockPosition.y * ChunkWidthSQ + blockPosition.z * ChunkWidth;
                 return fwdChunk.Blocks[index];
             }
-
-            // if (ParentWorld.ChunkDatas.TryGetValue(adjacentChunkPosition, out var adjacentChunk))
-            // {
-            //     int index = blockPosition.x + blockPosition.y * ChunkWidthSQ + blockPosition.z * ChunkWidth;
-            //     return adjacentChunk.Blocks[index];
-            // }
             
 
             return BlockType.Air;
@@ -253,13 +271,5 @@ public class ChunkRenderer : MonoBehaviour
         uvs.Add(new Vector2(0,1));
         uvs.Add(new Vector2(1,0));
         uvs.Add(new Vector2(1,1));
-        
-        triangles.Add(verticies.Count - 4);
-        triangles.Add(verticies.Count - 3);
-        triangles.Add(verticies.Count - 2);
-
-        triangles.Add(verticies.Count - 3);
-        triangles.Add(verticies.Count - 1);
-        triangles.Add(verticies.Count - 2);
     }
 }

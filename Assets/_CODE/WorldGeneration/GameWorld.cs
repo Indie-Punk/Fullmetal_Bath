@@ -20,6 +20,9 @@ namespace _CODE.WorldGeneration
         {
             mainCamera = Camera.main;
             Debug.Log("hello game world");
+            
+            ChunkRenderer.InitTriangles();
+            
             Generator.Init();
             StartCoroutine(Generate(false));
         }
@@ -27,6 +30,7 @@ namespace _CODE.WorldGeneration
         private IEnumerator Generate(bool wait)
         {
             int loadRadius = ViewRadius + 1;
+            
             for (int x = currentPlayerChunk.x - loadRadius; x <= currentPlayerChunk.x + loadRadius; x++)
             {
                 for (int y = currentPlayerChunk.y - loadRadius; y <= currentPlayerChunk.y + loadRadius; y++)
@@ -35,6 +39,22 @@ namespace _CODE.WorldGeneration
                     if (ChunkDatas.ContainsKey(chunkPosition)) continue;
                         
                     LoadChunkAt(chunkPosition);
+
+                    if (wait) yield return null;
+                }
+            }
+            
+            for (int x = currentPlayerChunk.x - ViewRadius; x <= currentPlayerChunk.x + ViewRadius; x++)
+            {
+                for (int y = currentPlayerChunk.y - ViewRadius; y <= currentPlayerChunk.y + ViewRadius; y++)
+                {
+                    Vector2Int chunkPosition = new Vector2Int(x,y);
+                    
+                    ChunkData chunkData = ChunkDatas[chunkPosition];
+                    
+                    if(chunkData.Renderer != null) continue;
+                    
+                    SpawnChunkRenderer(chunkData);
 
                     if (wait) yield return new WaitForSecondsRealtime(0.1f);
                 }
@@ -63,6 +83,13 @@ namespace _CODE.WorldGeneration
             chunkData.ChunkPosition = chunkPosition;
             chunkData.Blocks = Generator.GenerateCave(xPos, zPos);
             ChunkDatas.Add(chunkPosition, chunkData);
+        }
+
+        void SpawnChunkRenderer(ChunkData chunkData)
+        {
+            
+            float xPos = chunkData.ChunkPosition.x * ChunkRenderer.ChunkWidth * ChunkRenderer.BlockScale;
+            float zPos = chunkData.ChunkPosition.y * ChunkRenderer.ChunkWidth * ChunkRenderer.BlockScale;
             
             var chunk = Instantiate(chunkPrefab, new Vector3(xPos, 0, zPos), Quaternion.identity, transform);
             chunk.ChunkData = chunkData;
@@ -70,7 +97,6 @@ namespace _CODE.WorldGeneration
             
             chunkData.Renderer = chunk;
         }
-
         // bool 
         void Update()
         {
