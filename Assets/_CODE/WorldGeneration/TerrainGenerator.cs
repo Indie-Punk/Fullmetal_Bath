@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 namespace _CODE.WorldGeneration
 {
-    
-    public class TerrainGenerator : MonoBehaviour
+    [CreateAssetMenu(menuName = "World Generation/World Generation")]
+    public class TerrainGenerator : ScriptableObject
     {
         [SerializeField] float scale =.2f;
         public float BaseHeight = 8;
@@ -24,10 +24,6 @@ namespace _CODE.WorldGeneration
         private FastNoiseLite[] octaveNoises;
 
         private FastNoiseLite warpNoise;
-        public void Awake()
-        {
-            Init();
-        }
 
         public void Init()
         {

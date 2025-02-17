@@ -8,7 +8,7 @@ namespace _CODE.WorldGeneration
 {
     public class GameWorld : MonoBehaviour
     {
-        private const int ViewRadius = 3;
+        private const int ViewRadius = 2;
         [SerializeField] private ChunkRenderer chunkRenderer;
         [SerializeField] private TerrainGenerator Generator;
         [SerializeField] private Transform drill;
@@ -20,6 +20,7 @@ namespace _CODE.WorldGeneration
         {
             mainCamera = Camera.main;
             Debug.Log("hello game world");
+            Generator.Init();
             StartCoroutine(Generate(false));
         }
 
@@ -34,7 +35,7 @@ namespace _CODE.WorldGeneration
                         
                     LoadChunkAt(chunkPosition);
 
-                    if (wait) yield return new WaitForSecondsRealtime(0.2f);
+                    if (wait) yield return new WaitForSecondsRealtime(0.1f);
                 }
             }
         }
@@ -106,7 +107,7 @@ namespace _CODE.WorldGeneration
                         var chunkOrigin = new Vector3Int(chunkPos.x, 0, chunkPos.y) * ChunkRenderer.ChunkWidth;
                         if (isDestroying)
                         {
-                            chunkData.Renderer.DestroyBlock(blockWorldPos - chunkOrigin);
+                            chunkData.Renderer.DestroySphere(blockWorldPos - chunkOrigin,5);
                         }
                         else
                         {

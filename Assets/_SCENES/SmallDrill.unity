@@ -3277,7 +3277,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2121340212}
   - component: {fileID: 2121340213}
-  - component: {fileID: 2121340214}
   m_Layer: 0
   m_Name: WorldGenerator
   m_TagString: Untagged
@@ -3313,40 +3312,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chunkRenderer: {fileID: 5463924039471823163, guid: 622df6058c70b884888a919cfe0c4844, type: 3}
-  Generator: {fileID: 2121340214}
+  Generator: {fileID: 11400000, guid: 4a19dbcbbb8219c45b43494935a286ae, type: 2}
   drill: {fileID: 2089330671}
---- !u!114 &2121340214
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2121340210}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 99fa4ee98e91418ca6dd6c1d5d2b33e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scale: 0.2
-  BaseHeight: 8
-  Octaves:
-  - NoiseType: 0
-    Frequency: 0.25
-    Amplitude: 0.5
-  - NoiseType: 0
-    Frequency: 0.03333
-    Amplitude: 10
-  - NoiseType: 3
-    Frequency: 0.04
-    Amplitude: 3
-  DomainWarp:
-    NoiseType: 0
-    Frequency: 0.06
-    Amplitude: 15
-  perlinMax: 1
-  perlinMin: 0
-  twist: 1
-  turbulence: 1
 --- !u!114 &1483927627737953419
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3411,15 +3378,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7146502692774156471, guid: 44937ae91a543bc42809d7d23d40232f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 27.21
+      value: 22.4
       objectReference: {fileID: 0}
     - target: {fileID: 7146502692774156471, guid: 44937ae91a543bc42809d7d23d40232f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 33.2
+      value: 15.2
       objectReference: {fileID: 0}
     - target: {fileID: 7146502692774156471, guid: 44937ae91a543bc42809d7d23d40232f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 7.34
+      value: -2.4
       objectReference: {fileID: 0}
     - target: {fileID: 7146502692774156471, guid: 44937ae91a543bc42809d7d23d40232f, type: 3}
       propertyPath: m_LocalRotation.w
