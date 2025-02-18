@@ -17,6 +17,7 @@ public class ChunkRenderer : MonoBehaviour
     private Mesh chunkMesh;
 
 
+    ProfilerMarker meshMarker = new ProfilerMarker(ProfilerCategory.Loading, "Meshing");
     private static int[] triangles;
     
 
@@ -50,11 +51,18 @@ public class ChunkRenderer : MonoBehaviour
     {
         int index = blockPosition.x + blockPosition.y * MeshBuilder.ChunkWidthSQ + blockPosition.z * MeshBuilder.ChunkWidth;
         ChunkData.Blocks[index] = BlockType.Rock;
+        RegenerateMesh();
     }
     public void DestroyBlock(Vector3Int blockPosition)
     {
         int index = blockPosition.x + blockPosition.y * MeshBuilder.ChunkWidthSQ + blockPosition.z * MeshBuilder.ChunkWidth;
         ChunkData.Blocks[index] = BlockType.Air;
+        RegenerateMesh();
+    }
+
+    void RegenerateMesh()
+    {
+        SetMesh(MeshBuilder.GenerateMesh(ChunkData));
     }
 
     public void DestroySphere(Vector3Int blockPosition, int radius)
@@ -80,6 +88,7 @@ public class ChunkRenderer : MonoBehaviour
 
     public void SetMesh(GameWorld.GeneratedMeshData meshData)
     {
+        // meshMarker.Begin();
         var layout = new[]
         {
             new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32, 3),
@@ -103,5 +112,7 @@ public class ChunkRenderer : MonoBehaviour
         
         
         GetComponent<MeshCollider>().sharedMesh = chunkMesh;
+        
+        // meshMarker.End();
     }
 }

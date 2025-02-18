@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,14 +12,15 @@ namespace _CODE.WorldGeneration
 {
     public class GameWorld : MonoBehaviour
     {
-        private const int ViewRadius = 2;
+        private int ViewRadius = 2;
         [SerializeField] private ChunkRenderer chunkPrefab;
         [SerializeField] private TerrainGenerator Generator;
         [SerializeField] private Transform drill;
         public Dictionary<Vector2Int,ChunkData> ChunkDatas = new Dictionary<Vector2Int,ChunkData>();
         private Camera mainCamera;
         private Vector2Int currentPlayerChunk;
-        ProfilerMarker MeshingMarker = new ProfilerMarker(ProfilerCategory.Loading, "Meshing");
+        
+        ConcurrentQueue<GeneratedMeshData> meshingResults = new ConcurrentQueue<GeneratedMeshData>();
 
         [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
         public struct GeneratedMeshVertex
@@ -30,6 +34,7 @@ namespace _CODE.WorldGeneration
         {
             public GeneratedMeshVertex[] Vertices;
             public Bounds Bounds;
+            public ChunkData Data;
         }
         
         private void Start()
@@ -46,23 +51,32 @@ namespace _CODE.WorldGeneration
         private IEnumerator Generate(bool wait)
         {
             int loadRadius = ViewRadius + 1;
-            
-            for (int x = currentPlayerChunk.x - loadRadius; x <= currentPlayerChunk.x + loadRadius; x++)
+
+            Vector2Int center = currentPlayerChunk;
+
+            List<ChunkData> loadingChunks = new List<ChunkData>(); 
+            for (int x = center.x - loadRadius; x <= center.x + loadRadius; x++)
             {
-                for (int y = currentPlayerChunk.y - loadRadius; y <= currentPlayerChunk.y + loadRadius; y++)
+                for (int y = center.y - loadRadius; y <= center.y + loadRadius; y++)
                 {
                     Vector2Int chunkPosition = new Vector2Int(x,y);
                     if (ChunkDatas.ContainsKey(chunkPosition)) continue;
-                        
-                    LoadChunkAt(chunkPosition);
+
+                    ChunkData loadingChunkData = LoadChunkAt(chunkPosition);
+                    loadingChunks.Add(loadingChunkData);
 
                     if (wait) yield return null;
                 }
             }
-            
-            for (int x = currentPlayerChunk.x - ViewRadius; x <= currentPlayerChunk.x + ViewRadius; x++)
+
+            while (loadingChunks.Any(c=>c.State == ChunkDataState.StartedLoading))
             {
-                for (int y = currentPlayerChunk.y - ViewRadius; y <= currentPlayerChunk.y + ViewRadius; y++)
+                yield return null;
+            }
+            
+            for (int x = center.x - ViewRadius; x <= center.x + ViewRadius; x++)
+            {
+                for (int y = center.y - ViewRadius; y <= center.y + ViewRadius; y++)
                 {
                     Vector2Int chunkPosition = new Vector2Int(x,y);
                     
@@ -72,7 +86,7 @@ namespace _CODE.WorldGeneration
                     
                     SpawnChunkRenderer(chunkData);
 
-                    if (wait) yield return new WaitForSecondsRealtime(0.1f);
+                    if (wait) yield return null;
                 }
             }
         }
@@ -90,15 +104,23 @@ namespace _CODE.WorldGeneration
 
             StartCoroutine(Generate(false));
         }
-        private void LoadChunkAt(Vector2Int chunkPosition)
+        private ChunkData LoadChunkAt(Vector2Int chunkPosition)
         {
             float xPos = chunkPosition.x * MeshBuilder.ChunkWidth * MeshBuilder.BlockScale;
             float zPos = chunkPosition.y * MeshBuilder.ChunkWidth * MeshBuilder.BlockScale;
                     
             ChunkData chunkData = new ChunkData();
+            chunkData.State = ChunkDataState.StartedLoading;
             chunkData.ChunkPosition = chunkPosition;
-            chunkData.Blocks = Generator.GenerateCave(xPos, zPos);
             ChunkDatas.Add(chunkPosition, chunkData);
+
+            Task.Factory.StartNew(() =>
+            {
+                chunkData.Blocks = Generator.GenerateCave(xPos, zPos);
+                chunkData.State = ChunkDataState.Loaded;
+            });
+
+            return chunkData;
         }
 
         void SpawnChunkRenderer(ChunkData chunkData)
@@ -107,20 +129,15 @@ namespace _CODE.WorldGeneration
             ChunkDatas.TryGetValue(chunkData.ChunkPosition + Vector2Int.right, out chunkData.RightChunk);
             ChunkDatas.TryGetValue(chunkData.ChunkPosition + Vector2Int.up, out chunkData.FwdChunk);
             ChunkDatas.TryGetValue(chunkData.ChunkPosition + Vector2Int.down, out chunkData.BackChunk);
-            
-            float xPos = chunkData.ChunkPosition.x * MeshBuilder.ChunkWidth * MeshBuilder.BlockScale;
-            float zPos = chunkData.ChunkPosition.y * MeshBuilder.ChunkWidth * MeshBuilder.BlockScale;
-            
-            var chunk = Instantiate(chunkPrefab, new Vector3(xPos, 0, zPos), Quaternion.identity, transform);
-            chunk.ChunkData = chunkData;
-            chunk.ParentWorld = this;
 
-            MeshingMarker.Begin();
-            GeneratedMeshData meshData = MeshBuilder.GenerateMesh(chunkData);
-            chunk.SetMesh(meshData);
-            MeshingMarker.End();
+            chunkData.State = ChunkDataState.StartedMeshing;
             
-            chunkData.Renderer = chunk;
+            Task.Factory.StartNew(() =>
+            {
+                GeneratedMeshData meshData = MeshBuilder.GenerateMesh(chunkData);
+                meshingResults.Enqueue(meshData);
+            });
+
         }
         // bool 
         void Update()
@@ -134,6 +151,19 @@ namespace _CODE.WorldGeneration
             }
             
             CheckInput();
+
+            if (meshingResults.TryDequeue(out GeneratedMeshData meshData))
+            {
+                float xPos = meshData.Data.ChunkPosition.x * MeshBuilder.ChunkWidth * MeshBuilder.BlockScale;
+                float zPos = meshData.Data.ChunkPosition.y * MeshBuilder.ChunkWidth * MeshBuilder.BlockScale;
+                
+                var chunk = Instantiate(chunkPrefab, new Vector3(xPos, 0, zPos), Quaternion.identity, transform);
+                chunk.ChunkData = meshData.Data;
+                chunk.ParentWorld = this;
+                chunk.SetMesh(meshData);
+                meshData.Data.Renderer = chunk;
+                meshData.Data.State = ChunkDataState.SpawnedInWorld;
+            }
         }
 
         private float interactionTimer;
@@ -159,9 +189,11 @@ namespace _CODE.WorldGeneration
                     if (ChunkDatas.TryGetValue(chunkPos, out ChunkData chunkData))
                     {
                         var chunkOrigin = new Vector3Int(chunkPos.x, 0, chunkPos.y) * MeshBuilder.ChunkWidth;
+                        Debug.Log("blockWorldPos " + blockWorldPos);
+                        Debug.Log("chunkOrigin " + chunkOrigin);
                         if (isDestroying)
                         {
-                            chunkData.Renderer.DestroySphere(blockWorldPos - chunkOrigin,5);
+                            chunkData.Renderer.DestroyBlock(blockWorldPos - chunkOrigin);
                         }
                         else
                         {
@@ -170,11 +202,11 @@ namespace _CODE.WorldGeneration
                     }
                 }
 
-                interactionTimer = .05f;
+                interactionTimer = .5f;
             }
             else
             {
-                interactionTimer = .05f;
+                interactionTimer = .5f;
             }
         }
 

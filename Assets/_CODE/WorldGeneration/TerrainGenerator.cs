@@ -45,7 +45,6 @@ namespace _CODE.WorldGeneration
         }
         public BlockType[] GenerateCave(float offsetX, float offsetZ)
         {
-            generationMarker.Begin();
             var result = new BlockType[MeshBuilder.ChunkWidth * MeshBuilder.ChunkHeight * MeshBuilder.ChunkWidth];
             for (int x = 0; x < MeshBuilder.ChunkWidth; x++)
             {
@@ -62,7 +61,6 @@ namespace _CODE.WorldGeneration
                 }
             }
 
-            generationMarker.End();
             return result;
         }
 
