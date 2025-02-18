@@ -114,7 +114,6 @@ namespace _CODE.WorldGeneration
             chunk.ParentWorld = this;
 
             GeneratedMeshData meshData = MeshBuilder.GenerateMesh(chunkData);
-            Debug.Log(meshData.Vertices.Length);
             chunk.SetMesh(meshData);
             chunkData.Renderer = chunk;
         }

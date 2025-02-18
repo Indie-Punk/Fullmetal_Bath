@@ -40,7 +40,7 @@ public class ChunkRenderer : MonoBehaviour
         
     }
     
-    void Start()
+    void Awake()
     {
         chunkMesh = new Mesh();
 
@@ -89,8 +89,6 @@ public class ChunkRenderer : MonoBehaviour
             new VertexAttributeDescriptor(VertexAttribute.Normal, VertexAttributeFormat.SNorm8, 4),
             new VertexAttributeDescriptor(VertexAttribute.TexCoord0, VertexAttributeFormat.UNorm16, 2),
         };
-        Debug.Log("chunk mesh is null: " +chunkMesh == null);
-        Debug.Log("meshData Vertices count: " +meshData.Vertices.Length);
 
         chunkMesh.SetVertexBufferParams(meshData.Vertices.Length, layout);
         chunkMesh.SetVertexBufferData(meshData.Vertices,0,0, meshData.Vertices.Length);
