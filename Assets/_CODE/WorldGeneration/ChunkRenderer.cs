@@ -19,7 +19,6 @@ public class ChunkRenderer : MonoBehaviour
 
     private static int[] triangles;
     
-    ProfilerMarker MeshingMarker = new ProfilerMarker(ProfilerCategory.Loading, "Meshing");
 
     public static void InitTriangles()
     {
@@ -81,8 +80,6 @@ public class ChunkRenderer : MonoBehaviour
 
     public void SetMesh(GameWorld.GeneratedMeshData meshData)
     {
-        MeshingMarker.Begin();
-        
         var layout = new[]
         {
             new VertexAttributeDescriptor(VertexAttribute.Position, VertexAttributeFormat.Float32, 3),
@@ -106,6 +103,5 @@ public class ChunkRenderer : MonoBehaviour
         
         
         GetComponent<MeshCollider>().sharedMesh = chunkMesh;
-        MeshingMarker.End();
     }
 }

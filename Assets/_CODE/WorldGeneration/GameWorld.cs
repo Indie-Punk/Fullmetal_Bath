@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,6 +16,7 @@ namespace _CODE.WorldGeneration
         public Dictionary<Vector2Int,ChunkData> ChunkDatas = new Dictionary<Vector2Int,ChunkData>();
         private Camera mainCamera;
         private Vector2Int currentPlayerChunk;
+        ProfilerMarker MeshingMarker = new ProfilerMarker(ProfilerCategory.Loading, "Meshing");
 
         [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
         public struct GeneratedMeshVertex
@@ -113,8 +115,11 @@ namespace _CODE.WorldGeneration
             chunk.ChunkData = chunkData;
             chunk.ParentWorld = this;
 
+            MeshingMarker.Begin();
             GeneratedMeshData meshData = MeshBuilder.GenerateMesh(chunkData);
             chunk.SetMesh(meshData);
+            MeshingMarker.End();
+            
             chunkData.Renderer = chunk;
         }
         // bool 
