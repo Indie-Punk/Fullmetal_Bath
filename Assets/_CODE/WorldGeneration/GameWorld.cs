@@ -16,6 +16,20 @@ namespace _CODE.WorldGeneration
         private Camera mainCamera;
         private Vector2Int currentPlayerChunk;
 
+        [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+        public struct GeneratedMeshVertex
+        {
+            public Vector3 pos;
+            public sbyte normalX, normalY, normalZ, normalW;
+            public ushort uvX, uvY;
+        }
+
+        public class GeneratedMeshData
+        {
+            public GeneratedMeshVertex[] Vertices;
+            public Bounds Bounds;
+        }
+        
         private void Start()
         {
             mainCamera = Camera.main;
@@ -76,8 +90,8 @@ namespace _CODE.WorldGeneration
         }
         private void LoadChunkAt(Vector2Int chunkPosition)
         {
-            float xPos = chunkPosition.x * ChunkRenderer.ChunkWidth * ChunkRenderer.BlockScale;
-            float zPos = chunkPosition.y * ChunkRenderer.ChunkWidth * ChunkRenderer.BlockScale;
+            float xPos = chunkPosition.x * MeshBuilder.ChunkWidth * MeshBuilder.BlockScale;
+            float zPos = chunkPosition.y * MeshBuilder.ChunkWidth * MeshBuilder.BlockScale;
                     
             ChunkData chunkData = new ChunkData();
             chunkData.ChunkPosition = chunkPosition;
@@ -87,20 +101,27 @@ namespace _CODE.WorldGeneration
 
         void SpawnChunkRenderer(ChunkData chunkData)
         {
+            ChunkDatas.TryGetValue(chunkData.ChunkPosition + Vector2Int.left, out chunkData.LeftChunk);
+            ChunkDatas.TryGetValue(chunkData.ChunkPosition + Vector2Int.right, out chunkData.RightChunk);
+            ChunkDatas.TryGetValue(chunkData.ChunkPosition + Vector2Int.up, out chunkData.FwdChunk);
+            ChunkDatas.TryGetValue(chunkData.ChunkPosition + Vector2Int.down, out chunkData.BackChunk);
             
-            float xPos = chunkData.ChunkPosition.x * ChunkRenderer.ChunkWidth * ChunkRenderer.BlockScale;
-            float zPos = chunkData.ChunkPosition.y * ChunkRenderer.ChunkWidth * ChunkRenderer.BlockScale;
+            float xPos = chunkData.ChunkPosition.x * MeshBuilder.ChunkWidth * MeshBuilder.BlockScale;
+            float zPos = chunkData.ChunkPosition.y * MeshBuilder.ChunkWidth * MeshBuilder.BlockScale;
             
             var chunk = Instantiate(chunkPrefab, new Vector3(xPos, 0, zPos), Quaternion.identity, transform);
             chunk.ChunkData = chunkData;
             chunk.ParentWorld = this;
-            
+
+            GeneratedMeshData meshData = MeshBuilder.GenerateMesh(chunkData);
+            Debug.Log(meshData.Vertices.Length);
+            chunk.SetMesh(meshData);
             chunkData.Renderer = chunk;
         }
         // bool 
         void Update()
         {
-            Vector3Int playerWorldPos = Vector3Int.FloorToInt(drill.transform.position / ChunkRenderer.BlockScale);
+            Vector3Int playerWorldPos = Vector3Int.FloorToInt(drill.transform.position / MeshBuilder.BlockScale);
             Vector2Int playerChunk = GetChunkContainingBlock(playerWorldPos);
             if (playerChunk != currentPlayerChunk)
             {
@@ -126,14 +147,14 @@ namespace _CODE.WorldGeneration
                 {
                     Vector3 blockCenter;
                     if (isDestroying)
-                        blockCenter = hitInfo.point - hitInfo.normal * ChunkRenderer.BlockScale / 2;
+                        blockCenter = hitInfo.point - hitInfo.normal * MeshBuilder.BlockScale / 2;
                     else
-                        blockCenter = hitInfo.point + hitInfo.normal * ChunkRenderer.BlockScale / 2;
-                    Vector3Int blockWorldPos = Vector3Int.FloorToInt(blockCenter / ChunkRenderer.BlockScale);
+                        blockCenter = hitInfo.point + hitInfo.normal * MeshBuilder.BlockScale / 2;
+                    Vector3Int blockWorldPos = Vector3Int.FloorToInt(blockCenter / MeshBuilder.BlockScale);
                     Vector2Int chunkPos = GetChunkContainingBlock(blockWorldPos);
                     if (ChunkDatas.TryGetValue(chunkPos, out ChunkData chunkData))
                     {
-                        var chunkOrigin = new Vector3Int(chunkPos.x, 0, chunkPos.y) * ChunkRenderer.ChunkWidth;
+                        var chunkOrigin = new Vector3Int(chunkPos.x, 0, chunkPos.y) * MeshBuilder.ChunkWidth;
                         if (isDestroying)
                         {
                             chunkData.Renderer.DestroySphere(blockWorldPos - chunkOrigin,5);
@@ -155,7 +176,7 @@ namespace _CODE.WorldGeneration
 
         public Vector2Int GetChunkContainingBlock(Vector3Int blockWorldPos)
         {
-            Vector2Int chunkPosition =  new Vector2Int(blockWorldPos.x / ChunkRenderer.ChunkWidth, blockWorldPos.z / ChunkRenderer.ChunkWidth);
+            Vector2Int chunkPosition =  new Vector2Int(blockWorldPos.x / MeshBuilder.ChunkWidth, blockWorldPos.z / MeshBuilder.ChunkWidth);
 
             if (blockWorldPos.x < 0) chunkPosition.x--;
             if (blockWorldPos.z < 0) chunkPosition.y--;

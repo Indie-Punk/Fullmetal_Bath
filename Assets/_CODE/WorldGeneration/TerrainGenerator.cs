@@ -46,17 +46,17 @@ namespace _CODE.WorldGeneration
         public BlockType[] GenerateCave(float offsetX, float offsetZ)
         {
             generationMarker.Begin();
-            var result = new BlockType[ChunkRenderer.ChunkWidth * ChunkRenderer.ChunkHeight * ChunkRenderer.ChunkWidth];
-            for (int x = 0; x < ChunkRenderer.ChunkWidth; x++)
+            var result = new BlockType[MeshBuilder.ChunkWidth * MeshBuilder.ChunkHeight * MeshBuilder.ChunkWidth];
+            for (int x = 0; x < MeshBuilder.ChunkWidth; x++)
             {
-                for (int z = 0; z < ChunkRenderer.ChunkWidth; z++)
+                for (int z = 0; z < MeshBuilder.ChunkWidth; z++)
                 {
                     //float height  = Mathf.PerlinNoise((x/4f+offsetX) * scale, (z/4f+offsetZ) * scale) * 10 +15;
-                    float height = GetHeight(x * ChunkRenderer.BlockScale + offsetX,
-                        z * ChunkRenderer.BlockScale + offsetZ);
-                    for (int y = 0; y < height /ChunkRenderer.BlockScale; y++)
+                    float height = GetHeight(x * MeshBuilder.BlockScale + offsetX,
+                        z * MeshBuilder.BlockScale + offsetZ);
+                    for (int y = 0; y < height /MeshBuilder.BlockScale; y++)
                     {
-                        int index = x + y * ChunkRenderer.ChunkWidthSQ + z * ChunkRenderer.ChunkWidth;
+                        int index = x + y * MeshBuilder.ChunkWidthSQ + z * MeshBuilder.ChunkWidth;
                         result[index] = BlockType.Rock;
                     }
                 }
