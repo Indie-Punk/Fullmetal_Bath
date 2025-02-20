@@ -3132,8 +3132,8 @@ MonoBehaviour:
   _planeConstraint: 0
   _rootTransform: {fileID: 0}
   _rootTransformOffset: {x: 0, y: 0, z: 0}
-  _radius: 0.25
-  _height: 2
+  _radius: 0.4
+  _height: 1.8
   _slopeLimit: 45
   _stepOffset: 0.45
   _perchOffset: 0.25
@@ -3174,10 +3174,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.25
-  m_Height: 2
+  m_Radius: 0.4
+  m_Height: 1.8
   m_Direction: 1
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 0.9, z: 0}
 --- !u!54 &2089330670
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3314,6 +3314,7 @@ MonoBehaviour:
   chunkPrefab: {fileID: 5463924039471823163, guid: 622df6058c70b884888a919cfe0c4844, type: 3}
   Generator: {fileID: 11400000, guid: 4a19dbcbbb8219c45b43494935a286ae, type: 2}
   drill: {fileID: 2089330671}
+  regenerateChunks: []
 --- !u!114 &1483927627737953419
 MonoBehaviour:
   m_ObjectHideFlags: 0

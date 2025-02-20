@@ -6,10 +6,10 @@ namespace _CODE.WorldGeneration
 
     public static class MeshBuilder
     {
-        public const int ChunkWidth = 4;
+        public const int ChunkWidth = 8;
         public const int ChunkWidthSQ = ChunkWidth * ChunkWidth;
         public const int ChunkHeight = 128;
-        public const float BlockScale = 1;
+        public const float BlockScale =  .2f;
         
         public static GameWorld.GeneratedMeshData GenerateMesh(ChunkData chunkData)
         {
@@ -33,7 +33,7 @@ namespace _CODE.WorldGeneration
             var mesh = new GameWorld.GeneratedMeshData();
             mesh.Vertices = vertices.ToArray();
             
-            Vector3 boundsSize = new Vector3(ChunkWidth, maxY, ChunkWidth) * BlockScale;
+            Vector3 boundsSize = new Vector3(ChunkWidth, ChunkHeight, ChunkWidth) * BlockScale;
             mesh.Bounds = new Bounds(boundsSize/2, boundsSize);
             
             mesh.Data = chunkData;

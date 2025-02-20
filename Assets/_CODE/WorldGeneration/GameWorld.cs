@@ -19,6 +19,7 @@ namespace _CODE.WorldGeneration
         public Dictionary<Vector2Int,ChunkData> ChunkDatas = new Dictionary<Vector2Int,ChunkData>();
         private Camera mainCamera;
         private Vector2Int currentPlayerChunk;
+        public List<ChunkRenderer> regenerateChunks = new List<ChunkRenderer>();
         
         ConcurrentQueue<GeneratedMeshData> meshingResults = new ConcurrentQueue<GeneratedMeshData>();
 
@@ -90,7 +91,16 @@ namespace _CODE.WorldGeneration
                 }
             }
         }
-
+        
+        public void ReMeshSomeChunks()
+        {
+            foreach (var chunk in regenerateChunks)
+            {
+                chunk.ChunkData.Renderer?.RegenerateMesh();
+            }
+            regenerateChunks.Clear();
+        }
+        
         [ContextMenu("Regenerate world")]
         public void Regenerate()
         {
@@ -184,22 +194,25 @@ namespace _CODE.WorldGeneration
                         blockCenter = hitInfo.point - hitInfo.normal * MeshBuilder.BlockScale / 2;
                     else
                         blockCenter = hitInfo.point + hitInfo.normal * MeshBuilder.BlockScale / 2;
+                    
+                    
                     Vector3Int blockWorldPos = Vector3Int.FloorToInt(blockCenter / MeshBuilder.BlockScale);
                     Vector2Int chunkPos = GetChunkContainingBlock(blockWorldPos);
                     if (ChunkDatas.TryGetValue(chunkPos, out ChunkData chunkData))
                     {
                         var chunkOrigin = new Vector3Int(chunkPos.x, 0, chunkPos.y) * MeshBuilder.ChunkWidth;
-                        Debug.Log("blockWorldPos " + blockWorldPos);
-                        Debug.Log("chunkOrigin " + chunkOrigin);
+                        var blockPos = blockWorldPos - chunkOrigin;
                         if (isDestroying)
                         {
-                            chunkData.Renderer.DestroyBlock(blockWorldPos - chunkOrigin);
+                            chunkData.Renderer.DestroySphere(blockPos,10);
                         }
                         else
                         {
-                            chunkData.Renderer.SpawnBlock(blockWorldPos - chunkOrigin);
+                            chunkData.Renderer.SpawnBlock(blockPos);
                         }
                     }
+                    // SphereInteraction(blockCenter, 3, isDestroying);
+                    // InteractionBlock(blockCenter, isDestroying);
                 }
 
                 interactionTimer = .5f;
@@ -210,12 +223,33 @@ namespace _CODE.WorldGeneration
             }
         }
 
+        void InteractionBlock(Vector3 blockCenter,bool isDestroying)
+        {
+            
+            
+        }
+        public void SphereInteraction(Vector3 blockPosition, int radius, bool isDestroying)
+        {
+            for (int x = -radius; x <= radius; x++)
+            {
+                for (int y = -radius; y <= radius; y++)
+                {
+                    for (int z = -radius; z <= radius; z++)
+                    {
+                        if (x * x + y * y + z * z <= radius * radius)
+                        {
+                            InteractionBlock(blockPosition + new Vector3(x, y, z) * MeshBuilder.BlockScale, isDestroying);
+                        }
+                    }
+                }
+            }
+        }
         public Vector2Int GetChunkContainingBlock(Vector3Int blockWorldPos)
         {
             Vector2Int chunkPosition =  new Vector2Int(blockWorldPos.x / MeshBuilder.ChunkWidth, blockWorldPos.z / MeshBuilder.ChunkWidth);
 
-            if (blockWorldPos.x < 0) chunkPosition.x--;
-            if (blockWorldPos.z < 0) chunkPosition.y--;
+            if (blockWorldPos.x < 0 && blockWorldPos.x % MeshBuilder.ChunkWidth != 0) chunkPosition.x--;
+            if (blockWorldPos.z < 0 && blockWorldPos.z % MeshBuilder.ChunkWidth != 0) chunkPosition.y--;
             
             return chunkPosition;
         }
