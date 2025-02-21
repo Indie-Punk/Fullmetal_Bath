@@ -4944,7 +4944,7 @@ Transform:
   m_GameObject: {fileID: 2089330664}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 45.1, y: 15.84, z: -28.3}
+  m_LocalPosition: {x: 21.6, y: 17.54, z: -10.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5069,7 +5069,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chunkPrefab: {fileID: 5463924039471823163, guid: 622df6058c70b884888a919cfe0c4844, type: 3}
-  Generator: {fileID: 11400000, guid: 110be50286abbd444bdb3e8daec41b2f, type: 2}
+  Generator: {fileID: 11400000, guid: 3d5d872484ea6254dafceb65955733ad, type: 2}
   drill: {fileID: 2089330671}
   regenerateChunks: []
 --- !u!114 &1483927627737953419

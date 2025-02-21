@@ -43,7 +43,39 @@ namespace _CODE.WorldGeneration
             warpNoise.SetFrequency(DomainWarp.Frequency);
             warpNoise.SetDomainWarpAmp(DomainWarp.Amplitude);
         }
+
         public BlockType[] GenerateCave(float offsetX, float offsetZ)
+        {
+            
+            var result = new BlockType[MeshBuilder.ChunkWidth * MeshBuilder.ChunkHeight * MeshBuilder.ChunkWidth];
+
+            for (int x = 0; x < MeshBuilder.ChunkWidth; x++)
+            {
+                for (int z = 0; z < MeshBuilder.ChunkWidth; z++)
+                {
+                    for (int y = 0; y < MeshBuilder.ChunkHeight; y++)
+                    {
+                        
+                        for (int i = 0; i < Octaves.Length; i++)
+                        {
+                            float noise = octaveNoises[i].GetNoise(x* MeshBuilder.BlockScale + offsetX, 
+                                y * MeshBuilder.BlockScale + offsetZ, z * MeshBuilder.BlockScale);
+                            noise *= Octaves[i].Amplitude / 2;
+                            // Debug.Log("noise " + noise);
+                            if (noise <= .45f || noise >= .55f)
+                            {
+                                int index = x + y * MeshBuilder.ChunkWidthSQ + z * MeshBuilder.ChunkWidth;
+                                result[index] = BlockType.Rock;
+                            }
+                                
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+        public BlockType[] GenerateLandscape(float offsetX, float offsetZ)
         {
             var result = new BlockType[MeshBuilder.ChunkWidth * MeshBuilder.ChunkHeight * MeshBuilder.ChunkWidth];
             for (int x = 0; x < MeshBuilder.ChunkWidth; x++)

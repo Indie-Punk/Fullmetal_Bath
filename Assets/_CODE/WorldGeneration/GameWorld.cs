@@ -107,7 +107,7 @@ namespace _CODE.WorldGeneration
             Generator.Init();
             foreach (var chunkData in ChunkDatas)
             {
-                Destroy(chunkData.Value.Renderer.gameObject);
+                Destroy(chunkData.Value.Renderer?.gameObject);
             }
             
             ChunkDatas.Clear();

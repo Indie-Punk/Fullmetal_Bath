@@ -6,10 +6,10 @@ namespace _CODE.WorldGeneration
 
     public static class MeshBuilder
     {
-        public const int ChunkWidth = 8;
+        public const int ChunkWidth = 32;
         public const int ChunkWidthSQ = ChunkWidth * ChunkWidth;
-        public const int ChunkHeight = 128;
-        public const float BlockScale =  .2f;
+        public const int ChunkHeight = 32;
+        public const float BlockScale =  .5f;
         
         public static GameWorld.GeneratedMeshData GenerateMesh(ChunkData chunkData)
         {
